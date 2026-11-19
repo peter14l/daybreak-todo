@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daybreak UI Redesign Concepts - Interactive Showcase</title>
+  <style>
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background: #0a0a0c;
+      color: #e4e4e7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Concept Selector Bar */
+    header.showcase-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14, 14, 18, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(255, 167, 38, 0.15);
+      color: #ffa726;
+      border: 1px solid rgba(255, 167, 38, 0.3);
+    }
+
+    .concept-nav {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .concept-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      color: #a1a1aa;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .concept-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .concept-btn.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .meta-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-choose {
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #ffa726;
+      color: #121212;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    .btn-choose:hover {
+      background: #ffb74d;
+      transform: translateY(-1px);
+    }
+
+    /* Container for the Active Preview */
+    .viewport-container {
+      flex: 1;
+      padding: 28px 24px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .concept-description {
+      text-align: center;
+      margin-bottom: 24px;
+      max-width: 720px;
+    }
+
+    .concept-description h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .concept-description p {
+      color: #a1a1aa;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* App Frame Simulation */
+    .app-window {
+      width: 100%;
+      max-width: 1080px;
+      height: 720px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    /* Window Header / Titlebar */
+    .win-titlebar {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      user-select: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .win-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .win-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Window Body Layout */
+    .win-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Shared Sidebar Styling */
+    .app-sidebar {
+      width: 250px;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #71717a;
+      font-weight: 600;
+      padding: 0 8px;
+      margin-bottom: 4px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #d4d4d8;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-count {
+      font-size: 11px;
+      color: #71717a;
+      font-weight: 600;
+    }
+
+    /* Main Content Area */
+    .app-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 24px 32px 20px;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .view-heading h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .view-sub {
+      font-size: 13px;
+      color: #a1a1aa;
+      margin-top: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-action-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #d4d4d8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .icon-action-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+    }
+
+    /* Task Items Scrollable Container */
+    .tasks-container {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Quick Add Bar */
+    .quick-add-container {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    /* ============================================================
+       THEME 1: WINDOWS 11 FLUENT LUXE (Mica Alt & Refined Slate)
+       ============================================================ */
+    .theme-fluent {
+      background: #1c1c1f;
+      color: #ffffff;
+    }
+
+    .theme-fluent .win-titlebar {
+      background: rgba(24, 24, 27, 0.85);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .theme-fluent .app-sidebar {
+      background: rgba(22, 22, 25, 0.65);
+      backdrop-filter: blur(20px);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .theme-fluent .app-main {
+      background: #18181b;
+    }
+
+    .theme-fluent .task-card {
+      background: rgba(36, 36, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .theme-fluent .task-card:hover {
+      background: rgba(45, 45, 53, 0.9);
+      border-color: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .theme-fluent .task-card.completed {
+      opacity: 0.55;
+      background: rgba(28, 28, 32, 0.4);
+    }
+
+    .theme-fluent .task-card.completed .task-text {
+      text-decoration: line-through;
+      color: #a1a1aa;
+    }
+
+    .theme-fluent .check-circle {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      transition: all 0.15s;
+    }
+
+    .theme-fluent .task-card:hover .check-circle {
+      border-color: #ffa726;
+    }
+
+    .theme-fluent .task-card.completed .check-circle {
+      background: #ffa726;
+      border-color: #ffa726;
+    }
+
+    .theme-fluent .pill-tag {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #d4d4d8;
+    }
+
+    .theme-fluent .quick-add-input {
+      width: 100%;
+      height: 44px;
+      background: rgba(32, 32, 38, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0 16px 0 42px;
+      color: #ffffff;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .theme-fluent .quick-add-input:focus {
+      border-color: #ffa726;
+      box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.2);
+    }
+
+    /* ============================================================
+       THEME 2: SUNRISE WARMTH (Material 3 Expressive M3E Editorial)
+       ============================================================ */
+    .theme-sunrise {
+      background: #17131b;
+      color: #fceee8;
+    }
+
+    .theme-sunrise .win-titlebar {
+      background: #1d1723;
+      border-color: rgba(255, 183, 77, 0.08);
+    }
+
+    .theme-sunrise .app-sidebar {
+      background: #1d1723;
+      border-color: rgba(255, 183, 77, 0.08);
+    }
+
+    .theme-sunrise .app-main {
+      background: radial-gradient(circle at 100% 0%, rgba(255, 167, 38, 0.08) 0%, #17131b 60%);
+    }
+
+    .theme-sunrise .task-card {
+      background: #251e2c;
+      border: 1px solid rgba(255, 183, 77, 0.1);
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .theme-sunrise .task-card:hover {
+      background: #2f2639;
+      transform: translateY(-2px) scale(1.005);
+      border-color: rgba(255, 183, 77, 0.25);
+      box-shadow: 0 8px 24px rgba(23, 19, 27, 0.5);
+    }
+
+    .theme-sunrise .task-card.completed {
+      opacity: 0.5;
+      background: rgba(37, 30, 44, 0.5);
+    }
+
+    .theme-sunrise .task-card.completed .task-text {
+      text-decoration: line-through;
+      color: #ab9fae;
+    }
+
+    .theme-sunrise .check-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #ffb74d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 14px;
+      transition: all 0.15s;
+    }
+
+    .theme-sunrise .task-card.completed .check-circle {
+      background: #ffa726;
+      border-color: #ffa726;
+    }
+
+    .theme-sunrise .pill-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 14px;
+      background: rgba(255, 167, 38, 0.16);
+      color: #ffcc80;
+    }
+
+    .theme-sunrise .quick-add-input {
+      width: 100%;
+      height: 52px;
+      background: #251e2c;
+      border: 1.5px solid rgba(255, 183, 77, 0.2);
+      border-radius: 26px;
+      padding: 0 20px 0 48px;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .theme-sunrise .quick-add-input:focus {
+      border-color: #ffa726;
+      box-shadow: 0 4px 20px rgba(255, 167, 38, 0.25);
+    }
+
+    /* ============================================================
+       THEME 3: LINEAR OBSIDIAN (Ultra-Compact Focus & Developer)
+       ============================================================ */
+    .theme-linear {
+      background: #0d0e12;
+      color: #ededed;
+    }
+
+    .theme-linear .win-titlebar {
+      background: #0d0e12;
+      border-color: #1e2029;
+    }
+
+    .theme-linear .app-sidebar {
+      background: #0d0e12;
+      border-color: #1e2029;
+    }
+
+    .theme-linear .app-main {
+      background: #090a0d;
+    }
+
+    .theme-linear .task-card {
+      background: transparent;
+      border-bottom: 1px solid #1a1b23;
+      border-radius: 0;
+      padding: 10px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.1s;
+      cursor: pointer;
+    }
+
+    .theme-linear .task-card:hover {
+      background: #15171e;
+    }
+
+    .theme-linear .task-card.completed {
+      opacity: 0.45;
+    }
+
+    .theme-linear .task-card.completed .task-text {
+      text-decoration: line-through;
+      color: #71717a;
+    }
+
+    .theme-linear .check-circle {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid #3f4254;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      transition: all 0.1s;
+    }
+
+    .theme-linear .task-card.completed .check-circle {
+      background: #ffa726;
+      border-color: #ffa726;
+    }
+
+    .theme-linear .pill-tag {
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: #1c1d25;
+      color: #a1a1aa;
+      border: 1px solid #282a36;
+    }
+
+    .theme-linear .quick-add-input {
+      width: 100%;
+      height: 38px;
+      background: #13141a;
+      border: 1px solid #262835;
+      border-radius: 6px;
+      padding: 0 14px 0 38px;
+      color: #ffffff;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .theme-linear .quick-add-input:focus {
+      border-color: #5c607a;
+    }
+
+    /* Common Helper Components */
+    .task-left {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    .task-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .task-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: inherit;
+      line-height: 1.3;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .star-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #71717a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: color 0.15s;
+    }
+
+    .star-btn:hover, .star-btn.active {
+      color: #ffa726;
+    }
+
+    .search-pill {
+      height: 24px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 8px;
+      font-size: 11px;
+      color: #a1a1aa;
+    }
+
+    /* Comparison Table Below */
+    .showcase-footer {
+      max-width: 1080px;
+      width: 100%;
+      margin-top: 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 24px;
+    }
+
+    .concept-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .summary-card {
+      background: #141418;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .summary-card:hover {
+      border-color: #ffa726;
+      transform: translateY(-2px);
+    }
+
+    .summary-card.active {
+      border-color: #ffa726;
+      background: rgba(255, 167, 38, 0.05);
+    }
+
+    .summary-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .summary-desc {
+      font-size: 12px;
+      color: #a1a1aa;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .summary-btn {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .summary-btn:hover {
+      background: #ffa726;
+      color: #121212;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Showcase Header -->
+  <header class="showcase-header">
+    <div class="brand-title">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffa726" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+      </svg>
+      Daybreak UI Redesign Lab
+      <span class="brand-badge">Pick your aesthetic</span>
+    </div>
+
+    <!-- Concept Switcher Buttons -->
+    <nav class="concept-nav">
+      <button class="concept-btn active" onclick="switchTheme('fluent')">
+        <span>🪟</span> 1. Windows 11 Fluent Luxe
+      </button>
+      <button class="concept-btn" onclick="switchTheme('sunrise')">
+        <span>🌅</span> 2. Sunrise Warmth (M3E)
+      </button>
+      <button class="concept-btn" onclick="switchTheme('linear')">
+        <span>⚡</span> 3. Linear Obsidian
+      </button>
+    </nav>
+
+    <div class="meta-actions">
+      <button class="btn-choose" onclick="chooseActiveTheme()">
+        ✓ Select This Style
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Viewport -->
+  <main class="viewport-container">
+    <div class="concept-description">
+      <h2 id="conceptHeading">Concept 1: Windows 11 Fluent Luxe (Mica Alt & Glass)</h2>
+      <p id="conceptSubtitle">
+        Authentic Windows 11 design language featuring layered Mica Alt depth, subtle 1px hairline borders, refined slate cards, and native Windows typography. Completely eliminates stark unstyled blocks.
+      </p>
+    </div>
+
+    <!-- Interactive Simulated App Window -->
+    <div id="appWindow" class="app-window theme-fluent">
+      <!-- Titlebar -->
+      <div class="win-titlebar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffa726" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="1" y1="12" x2="3" y2="12"/></svg>
+          <span style="font-weight:600; opacity:0.9;">Daybreak</span>
+        </div>
+
+        <div class="search-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search tasks (Ctrl+F)
+        </div>
+
+        <div class="win-controls">
+          <div class="win-btn" title="Minimize"></div>
+          <div class="win-btn" title="Maximize"></div>
+          <div class="win-btn" style="background:#e81123;" title="Close"></div>
+        </div>
+      </div>
+
+      <!-- App Body -->
+      <div class="win-body">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+          <div>
+            <div class="sidebar-section-title">Focus Views</div>
+            <div class="nav-list">
+              <div class="nav-item active" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffa726" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                  <span>My Day</span>
+                </div>
+                <span class="nav-count" id="myDayCount">3</span>
+              </div>
+              <div class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span>Important</span>
+                </div>
+                <span class="nav-count">1</span>
+              </div>
+              <div class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span>Planned</span>
+                </div>
+                <span class="nav-count">2</span>
+              </div>
+              <div class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  <span>All Tasks</span>
+                </div>
+                <span class="nav-count">4</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="sidebar-section-title">My Lists</div>
+            <div class="nav-list">
+              <div class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  <span>Tasks</span>
+                </div>
+                <span class="nav-count">4</span>
+              </div>
+              <div class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  <span>Work</span>
+                </div>
+                <span class="nav-count">2</span>
+              </div>
+              <div class="nav-item" onclick="setActiveNav(this)">
+                <div class="nav-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span>Personal</span>
+                </div>
+                <span class="nav-count">1</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Viewport -->
+        <section class="app-main">
+          <!-- Main Heading -->
+          <div class="main-header">
+            <div class="view-heading">
+              <h1 id="viewTitle">My Day 🌅</h1>
+              <div class="view-sub" id="viewSubtitle">Thursday, November 19 • Every morning is a fresh start.</div>
+            </div>
+
+            <div class="header-actions">
+              <button class="icon-action-btn" title="Compact Glance Mode (Ctrl+M)" onclick="toggleGlanceMiniView()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              </button>
+              <button class="icon-action-btn" title="Sort Options">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="8" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tasks List -->
+          <div class="tasks-container" id="tasksList">
+            <!-- Task 1 -->
+            <div class="task-card" onclick="toggleTask(this)">
+              <div class="task-left">
+                <div class="check-circle">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3.5" style="display:none;"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="task-info">
+                  <div class="task-title-row">
+                    <span class="task-text">Welcome to Daybreak! 🌅</span>
+                  </div>
+                  <div class="task-meta">
+                    <span class="pill-tag" style="color:#ffa726; background:rgba(255,167,38,0.12);">☀️ My Day</span>
+                    <span class="pill-tag">Tasks</span>
+                  </div>
+                </div>
+              </div>
+              <button class="star-btn active" onclick="event.stopPropagation(); toggleStar(this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </button>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="task-card" onclick="toggleTask(this)">
+              <div class="task-left">
+                <div class="check-circle">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3.5" style="display:none;"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="task-info">
+                  <div class="task-title-row">
+                    <span class="task-text">Experience the True "My Day" Reset</span>
+                  </div>
+                  <div class="task-meta">
+                    <span class="pill-tag" style="color:#ffa726; background:rgba(255,167,38,0.12);">☀️ My Day</span>
+                    <span class="pill-tag">Due Today</span>
+                  </div>
+                </div>
+              </div>
+              <button class="star-btn" onclick="event.stopPropagation(); toggleStar(this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </button>
+            </div>
+
+            <!-- Task 3 -->
+            <div class="task-card" onclick="toggleTask(this)">
+              <div class="task-left">
+                <div class="check-circle">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3.5" style="display:none;"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="task-info">
+                  <div class="task-title-row">
+                    <span class="task-text">Try Keyboard Shortcuts (Ctrl+N, Ctrl+F, Ctrl+M)</span>
+                  </div>
+                  <div class="task-meta">
+                    <span class="pill-tag" style="color:#ffa726; background:rgba(255,167,38,0.12);">☀️ My Day</span>
+                    <span class="pill-tag">Every Week</span>
+                  </div>
+                </div>
+              </div>
+              <button class="star-btn" onclick="event.stopPropagation(); toggleStar(this)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Add Input -->
+          <div class="quick-add-container">
+            <svg style="position:absolute; left:14px; color:#ffa726;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <input type="text" id="quickAddInput" class="quick-add-input" placeholder="Add a task to My Day... (Press Enter)" onkeydown="handleQuickAdd(event)">
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Comparison Overview Table -->
+    <div class="showcase-footer">
+      <h3 style="font-size:18px; margin-bottom:4px;">Compare the 3 Aesthetic Archetypes</h3>
+      <p style="color:#a1a1aa; font-size:13px;">Click on any card to switch the live interactive view above.</p>
+
+      <div class="concept-cards-grid">
+        <div class="summary-card active" id="card-fluent" onclick="switchTheme('fluent')">
+          <div class="summary-title">1. Windows 11 Fluent Luxe</div>
+          <div class="summary-desc">
+            Authentic Windows 11 Mica Alt translucency with refined charcoal surfaces (`#1c1c1f`), subtle 1px hairline borders, and native Fluent controls. Feels like a built-in Microsoft flagship utility without the Electron bloat.
+          </div>
+          <button class="summary-btn" onclick="event.stopPropagation(); selectConcept('Windows 11 Fluent Luxe')">Choose Concept 1</button>
+        </div>
+
+        <div class="summary-card" id="card-sunrise" onclick="switchTheme('sunrise')">
+          <div class="summary-title">2. Sunrise Warmth (M3E)</div>
+          <div class="summary-desc">
+            Rich espresso and morning amber tones (`#17131b` to `#251e2c`) with generous squircle curves (`18px`), tactile spring transitions, and warm editorial typography. Designed to make morning task planning calm and joyful.
+          </div>
+          <button class="summary-btn" onclick="event.stopPropagation(); selectConcept('Sunrise Warmth (M3E)')">Choose Concept 2</button>
+        </div>
+
+        <div class="summary-card" id="card-linear" onclick="switchTheme('linear')">
+          <div class="summary-title">3. Linear Obsidian</div>
+          <div class="summary-desc">
+            Ultra-sleek, developer-focused pitch monochrome (`#0d0e12`). Sharp 1px dividers, monospace micro-badges, zero rounded fluff, and hyper-dense information hierarchy for high-speed power users.
+          </div>
+          <button class="summary-btn" onclick="event.stopPropagation(); selectConcept('Linear Obsidian')">Choose Concept 3</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentTheme = 'fluent';
+
+    const themeData = {
+      fluent: {
+        heading: "Concept 1: Windows 11 Fluent Luxe (Mica Alt & Glass)",
+        subtitle: "Authentic Windows 11 design language featuring layered Mica Alt depth, subtle 1px hairline borders, refined slate cards, and native Windows typography. Completely eliminates stark unstyled blocks."
+      },
+      sunrise: {
+        heading: "Concept 2: Sunrise Warmth (Material 3 Expressive M3E)",
+        subtitle: "Warm espresso and sunrise-amber palette inspired by morning dawn. Pill-shaped inputs, soft squircle cards, and warm typography designed to dissolve stress and overdue anxiety."
+      },
+      linear: {
+        heading: "Concept 3: Linear Obsidian (Developer & Focus Mode)",
+        subtitle: "Hyper-minimal, high-contrast monochrome design inspired by Linear and Raycast. Razor-thin borders, monospace metadata tags, and zero visual clutter."
+      }
+    };
+
+    function switchTheme(theme) {
+      currentTheme = theme;
+      const app = document.getElementById('appWindow');
+      app.className = 'app-window theme-' + theme;
+
+      document.getElementById('conceptHeading').innerText = themeData[theme].heading;
+      document.getElementById('conceptSubtitle').innerText = themeData[theme].subtitle;
+
+      // Update Top Nav
+      document.querySelectorAll('.concept-btn').forEach((btn, idx) => {
+        const themes = ['fluent', 'sunrise', 'linear'];
+        btn.classList.toggle('active', themes[idx] === theme);
+      });
+
+      // Update Bottom Cards
+      document.querySelectorAll('.summary-card').forEach(card => card.classList.remove('active'));
+      const activeCard = document.getElementById('card-' + theme);
+      if (activeCard) activeCard.classList.add('active');
+    }
+
+    function toggleTask(card) {
+      card.classList.toggle('completed');
+      const checkSvg = card.querySelector('.check-circle svg');
+      if (checkSvg) {
+        checkSvg.style.display = card.classList.contains('completed') ? 'block' : 'none';
+      }
+      updateCounts();
+    }
+
+    function toggleStar(btn) {
+      btn.classList.toggle('active');
+      const svg = btn.querySelector('svg');
+      if (btn.classList.contains('active')) {
+        svg.setAttribute('fill', 'currentColor');
+      } else {
+        svg.setAttribute('fill', 'none');
+      }
+    }
+
+    function handleQuickAdd(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('quickAddInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const list = document.getElementById('tasksList');
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        card.onclick = () => toggleTask(card);
+        card.innerHTML = `
+          <div class="task-left">
+            <div class="check-circle">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3.5" style="display:none;"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="task-info">
+              <div class="task-title-row">
+                <span class="task-text">${text}</span>
+              </div>
+              <div class="task-meta">
+                <span class="pill-tag" style="color:#ffa726; background:rgba(255,167,38,0.12);">☀️ My Day</span>
+                <span class="pill-tag">Just added</span>
+              </div>
+            </div>
+          </div>
+          <button class="star-btn" onclick="event.stopPropagation(); toggleStar(this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </button>
+        `;
+        list.appendChild(card);
+        input.value = '';
+        updateCounts();
+      }
+    }
+
+    function updateCounts() {
+      const all = document.querySelectorAll('.task-card');
+      const incomplete = Array.from(all).filter(c => !c.classList.contains('completed')).length;
+      document.getElementById('myDayCount').innerText = incomplete;
+    }
+
+    function setActiveNav(item) {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      const text = item.querySelector('span').innerText;
+      document.getElementById('viewTitle').innerText = text === 'My Day' ? 'My Day 🌅' : text;
+    }
+
+    function toggleGlanceMiniView() {
+      const app = document.getElementById('appWindow');
+      if (app.style.maxWidth === '380px') {
+        app.style.maxWidth = '1080px';
+        app.style.height = '720px';
+      } else {
+        app.style.maxWidth = '380px';
+        app.style.height = '560px';
+      }
+    }
+
+    function selectConcept(name) {
+      alert("Selected " + name + "! Let the AI agent know in the chat to implement this design.");
+    }
+
+    function chooseActiveTheme() {
+      const names = {
+        fluent: "1. Windows 11 Fluent Luxe",
+        sunrise: "2. Sunrise Warmth (M3E)",
+        linear: "3. Linear Obsidian"
+      };
+      alert("You picked " + names[currentTheme] + "! Tell the AI in chat: 'Use " + names[currentTheme] + "'");
+    }
+  </script>
+</body>
+</html>

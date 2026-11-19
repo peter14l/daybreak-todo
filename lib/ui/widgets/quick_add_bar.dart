@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/state/providers.dart';
+import '../../core/theme/theme_provider.dart';
 
 class QuickAddBar extends ConsumerStatefulWidget {
   final FocusNode? focusNode;
@@ -16,15 +17,24 @@ class QuickAddBar extends ConsumerStatefulWidget {
 class _QuickAddBarState extends ConsumerState<QuickAddBar> {
   final TextEditingController _controller = TextEditingController();
   late FocusNode _focusNode;
+  bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (mounted) {
+      setState(() => _isFocused = _focusNode.hasFocus);
+    }
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
@@ -61,31 +71,57 @@ class _QuickAddBarState extends ConsumerState<QuickAddBar> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final appTheme = ref.watch(currentThemeProvider);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Material(
-        elevation: 2,
-        shadowColor: Colors.black26,
-        borderRadius: BorderRadius.circular(28),
-        color: colorScheme.surfaceContainerHigh,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+          color: appTheme.quickAddBackground,
+          borderRadius: appTheme.quickAddBorderRadius,
+          border: Border.all(
+            color: _isFocused
+                ? appTheme.accentColor.withValues(alpha: 0.7)
+                : appTheme.borderColor,
+            width: _isFocused ? 1.5 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Row(
             children: [
-              Icon(Icons.add_task, color: colorScheme.primary),
+              Icon(
+                Icons.add_task,
+                color:
+                    _isFocused ? appTheme.accentColor : appTheme.textMutedColor,
+                size: 20,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: TextField(
                   controller: _controller,
                   focusNode: _focusNode,
-                  decoration: const InputDecoration(
+                  style: TextStyle(
+                    color: appTheme.textColor,
+                    fontSize: 13.5,
+                  ),
+                  decoration: InputDecoration(
                     hintText: 'Add a task... (Press Enter)',
+                    hintStyle: TextStyle(
+                      color: appTheme.textMutedColor.withValues(alpha: 0.7),
+                      fontSize: 13,
+                    ),
                     border: InputBorder.none,
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onSubmitted: (_) => _submit(),
                 ),
@@ -93,7 +129,9 @@ class _QuickAddBarState extends ConsumerState<QuickAddBar> {
               IconButton(
                 icon: const Icon(Icons.arrow_upward_rounded),
                 onPressed: _submit,
-                color: colorScheme.primary,
+                color: appTheme.accentColor,
+                splashRadius: 18,
+                tooltip: 'Add task',
               ),
             ],
           ),
