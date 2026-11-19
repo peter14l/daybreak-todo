@@ -219,4 +219,40 @@ class MicrosoftTodoImportService {
       errors: errors,
     );
   }
+
+  /// Exports all non-deleted task lists and tasks into a portable JSON backup archive
+  Future<String> exportToJsonString() async {
+    final lists = await taskListDao.getAllLists();
+    final tasks = await taskDao.watchAllActiveTasks().first;
+
+    final exportData = {
+      'version': '1.0',
+      'exportedAt': DateTime.now().toUtc().toIso8601String(),
+      'lists': lists
+          .map((l) => {
+                'id': l.id,
+                'name': l.name,
+                'createdAt': l.createdAt.toIso8601String(),
+              })
+          .toList(),
+      'tasks': tasks
+          .map((t) => {
+                'id': t.id,
+                'listId': t.listId,
+                'title': t.title,
+                'notes': t.notes,
+                'isCompleted': t.isCompleted,
+                'isImportant': t.isImportant,
+                'isMyDay': t.isMyDay,
+                'myDayDate': t.myDayDate,
+                'dueDate': t.dueDate?.toIso8601String(),
+                'reminderAt': t.reminderAt?.toIso8601String(),
+                'recurrenceRule': t.recurrenceRule,
+                'createdAt': t.createdAt.toIso8601String(),
+              })
+          .toList(),
+    };
+
+    return const JsonEncoder.withIndent('  ').convert(exportData);
+  }
 }

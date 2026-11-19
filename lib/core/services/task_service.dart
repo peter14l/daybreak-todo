@@ -243,6 +243,60 @@ class TaskService {
     await refreshWidgets();
   }
 
+  /// Updates task details (title, notes, due date, reminder, recurrence, list)
+  Future<void> updateTaskDetails({
+    required String taskId,
+    String? title,
+    String? notes,
+    Value<DateTime?>? dueDate,
+    Value<DateTime?>? reminderAt,
+    Value<String?>? recurrenceRule,
+    String? listId,
+  }) async {
+    final now = DateTime.now().toUtc();
+    await taskDao.updateTaskFields(
+      id: taskId,
+      title: title,
+      notes: notes,
+      dueDate: dueDate,
+      reminderAt: reminderAt,
+      recurrenceRule: recurrenceRule,
+      listId: listId,
+      updatedAt: now,
+    );
+    await refreshWidgets();
+  }
+
+  /// Subtask operations
+  Future<void> createSubtask(String taskId, String title) async {
+    if (title.trim().isEmpty) return;
+    final now = DateTime.now().toUtc();
+    final subtasks = await subtaskDao.getSubtasksByTask(taskId);
+    await subtaskDao.insertSubtask(
+      SubtasksCompanion(
+        id: Value(AppDatabase.generateId()),
+        taskId: Value(taskId),
+        title: Value(title.trim()),
+        isCompleted: const Value(false),
+        sortOrder: Value(subtasks.length),
+        createdAt: Value(now),
+        updatedAt: Value(now),
+        isDeleted: const Value(false),
+        syncStatus: const Value('pending'),
+      ),
+    );
+  }
+
+  Future<void> toggleSubtask(String subtaskId, bool isCompleted) async {
+    final now = DateTime.now().toUtc();
+    await subtaskDao.toggleSubtask(subtaskId, isCompleted, now);
+  }
+
+  Future<void> deleteSubtask(String subtaskId) async {
+    final now = DateTime.now().toUtc();
+    await subtaskDao.softDeleteSubtask(subtaskId, now);
+  }
+
   /// Creates a new user list
   Future<String> createList(String name) async {
     final listId = AppDatabase.generateId();

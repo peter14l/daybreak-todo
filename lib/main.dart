@@ -9,10 +9,17 @@ import 'ui/adaptive_app_shell.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Core Services & Database
+  // Initialize Core Services & Database with Supabase Sync
+  const supabaseUrlEnv = String.fromEnvironment('SUPABASE_URL');
+  const supabaseAnonKeyEnv = String.fromEnvironment('SUPABASE_ANON_KEY');
+
   await ServiceLocator.initialize(
-    supabaseUrl: const String.fromEnvironment('SUPABASE_URL'),
-    supabaseAnonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
+    supabaseUrl: supabaseUrlEnv.isNotEmpty
+        ? supabaseUrlEnv
+        : 'https://zdpolpxaurqjfzvnzaet.supabase.co',
+    supabaseAnonKey: supabaseAnonKeyEnv.isNotEmpty
+        ? supabaseAnonKeyEnv
+        : 'sb_publishable_eLtc2jgxiMuAy8rEi3xYcA_AltvRmTn',
   );
 
   if (isDesktop) {
@@ -22,14 +29,9 @@ Future<void> main() async {
       minimumSize: Size(900, 600),
       center: true,
       title: 'Daybreak',
-      titleBarStyle: TitleBarStyle.hidden,
-      windowButtonVisibility: false,
+      titleBarStyle: TitleBarStyle.normal,
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.setTitleBarStyle(
-        TitleBarStyle.hidden,
-        windowButtonVisibility: false,
-      );
       await windowManager.show();
       await windowManager.focus();
     });

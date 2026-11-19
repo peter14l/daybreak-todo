@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 
@@ -136,6 +137,20 @@ class WidgetSyncService {
         androidName: androidWidgetFocus,
         qualifiedAndroidName: 'com.daybreak.daybreak.FocusWidgetProvider',
       );
+
+      // Feature 4: Update Android Sticky Notification Shade Glance
+      try {
+        const glanceChannel =
+            MethodChannel('com.daybreak.daybreak/notification_glance');
+        final remaining = payload.totalTasks - payload.completedTasks;
+        await glanceChannel.invokeMethod('updateGlance', {
+          'title': '${payload.greeting} • Daybreak 🌅',
+          'content': remaining > 0
+              ? '$remaining remaining today • Next: ${payload.topTaskTitle}'
+              : 'All clear! Every task finished for today 🎉',
+          'count': remaining,
+        });
+      } catch (_) {}
     } catch (_) {
       // Gracefully ignore widget sync errors on unsupported platforms or during tests
     }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/db/app_database.dart';
 import '../../core/state/providers.dart';
 import '../../core/theme/theme_provider.dart';
 import '../onboarding/why_daybreak_dialog.dart';
+import '../widgets/backup_import_dialog.dart';
 import '../widgets/quick_add_bar.dart';
+import '../widgets/task_detail_panel.dart';
 import '../widgets/task_item_card.dart';
 import '../widgets/theme_switcher_dialog.dart';
 
@@ -168,6 +171,15 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
                 ),
                 IconButton(
                   icon: Icon(
+                    Icons.sync_alt_rounded,
+                    color: currentTheme.textMutedColor,
+                    size: 20,
+                  ),
+                  tooltip: 'Backup, Export & Import',
+                  onPressed: () => BackupImportDialog.show(ctx),
+                ),
+                IconButton(
+                  icon: Icon(
                     Icons.help_outline,
                     color: currentTheme.textMutedColor,
                     size: 20,
@@ -179,12 +191,35 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
             ),
             body: Column(
               children: [
+                // Smart Filter Bar (Feature 7)
+                _buildFilterBar(currentTheme, tasksAsync.value ?? []),
+
                 Expanded(
                   child: tasksAsync.when(
                     data: (tasks) {
+                      final taskFilter = ref.watch(taskFilterProvider);
+                      final selectedTag = ref.watch(selectedTagFilterProvider);
+
                       var filtered = tasks;
+                      if (taskFilter == TaskFilter.pending) {
+                        filtered =
+                            filtered.where((t) => !t.isCompleted).toList();
+                      } else if (taskFilter == TaskFilter.completed) {
+                        filtered =
+                            filtered.where((t) => t.isCompleted).toList();
+                      } else if (taskFilter == TaskFilter.important) {
+                        filtered =
+                            filtered.where((t) => t.isImportant).toList();
+                      }
+                      if (selectedTag != null) {
+                        filtered = filtered
+                            .where((t) => t.title
+                                .toLowerCase()
+                                .contains('#${selectedTag.toLowerCase()}'))
+                            .toList();
+                      }
                       if (searchQuery.isNotEmpty) {
-                        filtered = tasks
+                        filtered = filtered
                             .where((t) => t.title
                                 .toLowerCase()
                                 .contains(searchQuery.toLowerCase()))
@@ -228,7 +263,30 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
                         itemCount: filtered.length,
                         padding: const EdgeInsets.only(top: 8, bottom: 8),
                         itemBuilder: (context, index) {
-                          return TaskItemCard(task: filtered[index]);
+                          return TaskItemCard(
+                            task: filtered[index],
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: ctx,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (sheetCtx) => Container(
+                                  height: MediaQuery.of(sheetCtx).size.height *
+                                      0.85,
+                                  decoration: BoxDecoration(
+                                    color: currentTheme.surface,
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: TaskDetailPanel(
+                                    taskId: filtered[index].id,
+                                    onClose: () => Navigator.of(sheetCtx).pop(),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
                         },
                       );
                     },
@@ -300,6 +358,115 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFilterBar(DaybreakTheme currentTheme, List<Task> tasks) {
+    final activeFilter = ref.watch(taskFilterProvider);
+    final selectedTag = ref.watch(selectedTagFilterProvider);
+
+    // Extract tags from tasks
+    final tagRegex = RegExp(r'#(\w+)', caseSensitive: false);
+    final foundTags = <String>{};
+    for (final t in tasks) {
+      for (final m in tagRegex.allMatches(t.title)) {
+        if (m.group(1) != null) foundTags.add(m.group(1)!.toLowerCase());
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      alignment: Alignment.centerLeft,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildFilterChip(
+              'All',
+              activeFilter == TaskFilter.all && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state = TaskFilter.all;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            const SizedBox(width: 6),
+            _buildFilterChip(
+              'Pending',
+              activeFilter == TaskFilter.pending && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state =
+                    TaskFilter.pending;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            const SizedBox(width: 6),
+            _buildFilterChip(
+              'Completed',
+              activeFilter == TaskFilter.completed && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state =
+                    TaskFilter.completed;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            const SizedBox(width: 6),
+            _buildFilterChip(
+              '⭐ Important',
+              activeFilter == TaskFilter.important && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state =
+                    TaskFilter.important;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            for (final tag in foundTags) ...[
+              const SizedBox(width: 6),
+              _buildFilterChip(
+                '#$tag',
+                selectedTag == tag,
+                () {
+                  ref.read(selectedTagFilterProvider.notifier).state =
+                      selectedTag == tag ? null : tag;
+                },
+                currentTheme,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(
+      String label, bool isSelected, VoidCallback onTap, DaybreakTheme theme) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.accentColor.withValues(alpha: 0.18)
+              : theme.surfaceHover,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? theme.accentColor : theme.borderColor,
+            width: isSelected ? 1.2 : 0.8,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? theme.accentColor : theme.textMutedColor,
+            fontSize: 11.5,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
       ),
     );
   }

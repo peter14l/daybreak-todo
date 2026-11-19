@@ -4,13 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
+import '../../core/services/audio_feedback_service.dart';
 import '../../core/state/providers.dart';
 import '../../core/theme/theme_provider.dart';
 
 class TaskItemCard extends ConsumerStatefulWidget {
   final Task task;
+  final VoidCallback? onTap;
 
-  const TaskItemCard({super.key, required this.task});
+  const TaskItemCard({
+    super.key,
+    required this.task,
+    this.onTap,
+  });
 
   @override
   ConsumerState<TaskItemCard> createState() => _TaskItemCardState();
@@ -52,10 +58,11 @@ class _TaskItemCardState extends ConsumerState<TaskItemCard> {
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 20),
       ),
       onDismissed: (direction) {
-        HapticFeedback.mediumImpact();
         if (direction == DismissDirection.startToEnd) {
+          AudioFeedbackService.playTaskCompletion();
           taskService.toggleTaskCompletion(task.id, !task.isCompleted);
         } else {
+          HapticFeedback.mediumImpact();
           taskService.deleteTask(task.id);
         }
       },
@@ -89,10 +96,11 @@ class _TaskItemCardState extends ConsumerState<TaskItemCard> {
             borderRadius: appTheme.borderRadius,
             child: InkWell(
               borderRadius: appTheme.borderRadius,
-              onTap: () {
-                HapticFeedback.selectionClick();
-                taskService.toggleTaskCompletion(task.id, !task.isCompleted);
-              },
+              onTap: widget.onTap ??
+                  () {
+                    HapticFeedback.selectionClick();
+                    ref.read(selectedTaskIdProvider.notifier).state = task.id;
+                  },
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -102,7 +110,7 @@ class _TaskItemCardState extends ConsumerState<TaskItemCard> {
                     // Styled tactile checkbox
                     GestureDetector(
                       onTap: () {
-                        HapticFeedback.selectionClick();
+                        AudioFeedbackService.playTaskCompletion();
                         taskService.toggleTaskCompletion(
                             task.id, !task.isCompleted);
                       },

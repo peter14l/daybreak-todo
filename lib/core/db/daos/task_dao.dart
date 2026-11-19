@@ -67,6 +67,34 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return (select(tasks)..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 
+  Stream<Task?> watchTask(String id) {
+    return (select(tasks)..where((t) => t.id.equals(id))).watchSingleOrNull();
+  }
+
+  Future<int> updateTaskFields({
+    required String id,
+    String? title,
+    String? notes,
+    Value<DateTime?>? dueDate,
+    Value<DateTime?>? reminderAt,
+    Value<String?>? recurrenceRule,
+    String? listId,
+    required DateTime updatedAt,
+  }) {
+    return (update(tasks)..where((t) => t.id.equals(id))).write(
+      TasksCompanion(
+        title: title != null ? Value(title) : const Value.absent(),
+        notes: notes != null ? Value(notes) : const Value.absent(),
+        dueDate: dueDate ?? const Value.absent(),
+        reminderAt: reminderAt ?? const Value.absent(),
+        recurrenceRule: recurrenceRule ?? const Value.absent(),
+        listId: listId != null ? Value(listId) : const Value.absent(),
+        updatedAt: Value(updatedAt),
+        syncStatus: const Value('pending'),
+      ),
+    );
+  }
+
   Future<int> insertTask(TasksCompanion task) => into(tasks).insert(task);
 
   Future<bool> updateTask(TasksCompanion task) => update(tasks).replace(task);

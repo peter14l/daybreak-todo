@@ -19,6 +19,30 @@ final searchQueryProvider = StateProvider<String>((ref) => '');
 
 final isCompactGlanceProvider = StateProvider<bool>((ref) => false);
 
+/// Selected task for the detail inspector pane
+final selectedTaskIdProvider = StateProvider<String?>((ref) => null);
+
+/// Filter options for current view
+enum TaskFilter { all, pending, completed, important }
+
+final taskFilterProvider = StateProvider<TaskFilter>((ref) => TaskFilter.all);
+
+final selectedTagFilterProvider = StateProvider<String?>((ref) => null);
+
+/// Watch a single task by ID
+final singleTaskStreamProvider =
+    StreamProvider.family<Task?, String>((ref, taskId) {
+  final db = ref.watch(databaseProvider);
+  return db.taskDao.watchTask(taskId);
+});
+
+/// Watch subtasks for a task
+final taskSubtasksStreamProvider =
+    StreamProvider.family<List<Subtask>, String>((ref, taskId) {
+  final db = ref.watch(databaseProvider);
+  return db.subtaskDao.watchSubtasksByTask(taskId);
+});
+
 /// Stream provider for all task lists
 final allListsStreamProvider = StreamProvider<List<TaskList>>((ref) {
   final db = ref.watch(databaseProvider);

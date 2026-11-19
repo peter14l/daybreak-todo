@@ -18,7 +18,9 @@ import '../../core/state/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 import '../onboarding/why_daybreak_dialog.dart';
+import '../widgets/backup_import_dialog.dart';
 import '../widgets/quick_add_bar.dart';
+import '../widgets/task_detail_panel.dart';
 import '../widgets/task_item_card.dart';
 import '../widgets/theme_switcher_dialog.dart';
 
@@ -311,92 +313,136 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
     final tasksAsync = ref.watch(activeTasksStreamProvider);
     final searchQuery = ref.watch(searchQueryProvider);
     final customListsAsync = ref.watch(allListsStreamProvider);
+    final selectedTaskId = ref.watch(selectedTaskIdProvider);
+    final taskFilter = ref.watch(taskFilterProvider);
+    final selectedTag = ref.watch(selectedTagFilterProvider);
 
-    final mainContent = Container(
-      color: currentTheme.isTranslucent
-          ? Colors.transparent
-          : currentTheme.scaffoldBackground,
-      child: Column(
-        children: [
-          // Elegant Header matching index.html
-          tasksAsync.maybeWhen(
-            data: (tasks) => _buildViewHeader(activeView, tasks, currentTheme),
-            orElse: () => _buildViewHeader(activeView, [], currentTheme),
-          ),
+    final mainContent = Row(
+      children: [
+        Expanded(
+          child: Container(
+            color: currentTheme.isTranslucent
+                ? Colors.transparent
+                : currentTheme.scaffoldBackground,
+            child: Column(
+              children: [
+                // Elegant Header matching index.html
+                tasksAsync.maybeWhen(
+                  data: (tasks) =>
+                      _buildViewHeader(activeView, tasks, currentTheme),
+                  orElse: () => _buildViewHeader(activeView, [], currentTheme),
+                ),
 
-          // Tasks List
-          Expanded(
-            child: tasksAsync.when(
-              data: (tasks) {
-                var filtered = tasks;
-                if (searchQuery.isNotEmpty) {
-                  filtered = tasks
-                      .where((t) => t.title
-                          .toLowerCase()
-                          .contains(searchQuery.toLowerCase()))
-                      .toList();
-                }
+                // Smart Filter Bar (Feature 7)
+                _buildFilterBar(currentTheme, tasksAsync.value ?? []),
 
-                if (filtered.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.inbox_outlined,
-                          size: 40,
-                          color: currentTheme.textMutedColor
-                              .withValues(alpha: 0.5),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          searchQuery.isNotEmpty
-                              ? 'No matching tasks found'
-                              : 'No tasks in this list yet',
-                          style: TextStyle(
-                            color: currentTheme.textColor,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                // Tasks List
+                Expanded(
+                  child: tasksAsync.when(
+                    data: (tasks) {
+                      var filtered = tasks;
+                      if (taskFilter == TaskFilter.pending) {
+                        filtered =
+                            filtered.where((t) => !t.isCompleted).toList();
+                      } else if (taskFilter == TaskFilter.completed) {
+                        filtered =
+                            filtered.where((t) => t.isCompleted).toList();
+                      } else if (taskFilter == TaskFilter.important) {
+                        filtered =
+                            filtered.where((t) => t.isImportant).toList();
+                      }
+                      if (selectedTag != null) {
+                        filtered = filtered
+                            .where((t) => t.title
+                                .toLowerCase()
+                                .contains('#${selectedTag.toLowerCase()}'))
+                            .toList();
+                      }
+                      if (searchQuery.isNotEmpty) {
+                        filtered = filtered
+                            .where((t) => t.title
+                                .toLowerCase()
+                                .contains(searchQuery.toLowerCase()))
+                            .toList();
+                      }
+
+                      if (filtered.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.inbox_outlined,
+                                size: 40,
+                                color: currentTheme.textMutedColor
+                                    .withValues(alpha: 0.5),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                searchQuery.isNotEmpty
+                                    ? 'No matching tasks found'
+                                    : 'No tasks in this list yet',
+                                style: TextStyle(
+                                  color: currentTheme.textColor,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Press Ctrl+N to quickly add a task',
+                                style: TextStyle(
+                                  color: currentTheme.textMutedColor,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Press Ctrl+N to quickly add a task',
-                          style: TextStyle(
-                            color: currentTheme.textMutedColor,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        itemCount: filtered.length,
+                        itemBuilder: (context, idx) =>
+                            TaskItemCard(task: filtered[idx]),
+                      );
+                    },
+                    loading: () => Center(
+                      child: ProgressRing(
+                        activeColor: currentTheme.accentColor,
+                      ),
                     ),
-                  );
-                }
+                    error: (err, _) => Center(
+                      child: Text(
+                        'Error: $err',
+                        style: TextStyle(color: currentTheme.textColor),
+                      ),
+                    ),
+                  ),
+                ),
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, idx) =>
-                      TaskItemCard(task: filtered[idx]),
-                );
-              },
-              loading: () => Center(
-                child: ProgressRing(
-                  activeColor: currentTheme.accentColor,
-                ),
-              ),
-              error: (err, _) => Center(
-                child: Text(
-                  'Error: $err',
-                  style: TextStyle(color: currentTheme.textColor),
-                ),
-              ),
+                // Quick add bar
+                QuickAddBar(focusNode: _quickAddFocusNode),
+              ],
             ),
           ),
-
-          // Quick add bar
-          QuickAddBar(focusNode: _quickAddFocusNode),
+        ),
+        if (selectedTaskId != null) ...[
+          Container(
+            width: 1,
+            color: currentTheme.borderColor,
+          ),
+          SizedBox(
+            width: 380,
+            child: TaskDetailPanel(
+              taskId: selectedTaskId,
+              onClose: () =>
+                  ref.read(selectedTaskIdProvider.notifier).state = null,
+            ),
+          ),
         ],
-      ),
+      ],
     );
 
     return NavigationView(
@@ -518,13 +564,17 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 onPressed: () => WhyDaybreakDialog.show(context),
               ),
             ),
-            const SizedBox(width: 8),
 
-            // Native frameless window caption controls
-            const SizedBox(
-              width: 138,
-              child: WindowCaption(
-                brightness: Brightness.dark,
+            // Backup & Import
+            Tooltip(
+              message: 'Backup, Export & Import Tasks',
+              child: IconButton(
+                icon: Icon(
+                  Icons.sync_alt_rounded,
+                  size: 15,
+                  color: currentTheme.textColor,
+                ),
+                onPressed: () => BackupImportDialog.show(context),
               ),
             ),
           ],
@@ -700,6 +750,115 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFilterBar(DaybreakTheme currentTheme, List<Task> tasks) {
+    final activeFilter = ref.watch(taskFilterProvider);
+    final selectedTag = ref.watch(selectedTagFilterProvider);
+
+    // Extract tags from tasks
+    final tagRegex = RegExp(r'#(\w+)', caseSensitive: false);
+    final foundTags = <String>{};
+    for (final t in tasks) {
+      for (final m in tagRegex.allMatches(t.title)) {
+        if (m.group(1) != null) foundTags.add(m.group(1)!.toLowerCase());
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 4),
+      alignment: Alignment.centerLeft,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildFilterChip(
+              'All',
+              activeFilter == TaskFilter.all && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state = TaskFilter.all;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            const SizedBox(width: 6),
+            _buildFilterChip(
+              'Pending',
+              activeFilter == TaskFilter.pending && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state =
+                    TaskFilter.pending;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            const SizedBox(width: 6),
+            _buildFilterChip(
+              'Completed',
+              activeFilter == TaskFilter.completed && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state =
+                    TaskFilter.completed;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            const SizedBox(width: 6),
+            _buildFilterChip(
+              '⭐ Important',
+              activeFilter == TaskFilter.important && selectedTag == null,
+              () {
+                ref.read(taskFilterProvider.notifier).state =
+                    TaskFilter.important;
+                ref.read(selectedTagFilterProvider.notifier).state = null;
+              },
+              currentTheme,
+            ),
+            for (final tag in foundTags) ...[
+              const SizedBox(width: 6),
+              _buildFilterChip(
+                '#$tag',
+                selectedTag == tag,
+                () {
+                  ref.read(selectedTagFilterProvider.notifier).state =
+                      selectedTag == tag ? null : tag;
+                },
+                currentTheme,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(
+      String label, bool isSelected, VoidCallback onTap, DaybreakTheme theme) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.accentColor.withValues(alpha: 0.18)
+              : theme.surfaceHover,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? theme.accentColor : theme.borderColor,
+            width: isSelected ? 1.2 : 0.8,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? theme.accentColor : theme.textMutedColor,
+            fontSize: 11.5,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
       ),
     );
   }
