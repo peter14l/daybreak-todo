@@ -1,0 +1,64 @@
+{
+  "lists": [
+    {
+      "id": "list-tasks-default",
+      "name": "Tasks",
+      "isDefault": true,
+      "sortOrder": 0
+    },
+    {
+      "id": "list-work-default",
+      "name": "Work",
+      "isDefault": false,
+      "sortOrder": 1
+    },
+    {
+      "id": "list-personal-default",
+      "name": "Personal",
+      "isDefault": false,
+      "sortOrder": 2
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-welcome-1",
+      "listId": "list-tasks-default",
+      "title": "Welcome to Daybreak! 🌅",
+      "notes": "Every morning is a fresh start. Daybreak is your local-first, zero-bloat task manager built for native speed on Windows and Android.",
+      "isCompleted": false,
+      "isImportant": true,
+      "isMyDay": true,
+      "sortOrder": 0
+    },
+    {
+      "id": "task-welcome-2",
+      "listId": "list-tasks-default",
+      "title": "Experience the True \"My Day\" Reset",
+      "notes": "Add tasks to My Day anytime. At midnight, yesterday's My Day slate resets cleanly without losing tasks from their parent list—no overdue red badge stress!",
+      "isCompleted": false,
+      "isImportant": false,
+      "isMyDay": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "task-welcome-3",
+      "listId": "list-tasks-default",
+      "title": "Try Keyboard Shortcuts (Ctrl+N, Ctrl+F, Ctrl+M)",
+      "notes": "Press Ctrl+M on Windows to toggle Compact Glance mode! Press Ctrl+N to create a task, and Ctrl+F to search instantly across all your lists.",
+      "isCompleted": false,
+      "isImportant": false,
+      "isMyDay": false,
+      "sortOrder": 2
+    },
+    {
+      "id": "task-welcome-4",
+      "listId": "list-tasks-default",
+      "title": "Migrate from Microsoft To Do",
+      "notes": "Easily import your existing Microsoft To Do lists via Microsoft Graph API or JSON archive before the June 2027 shutdown.",
+      "isCompleted": false,
+      "isImportant": false,
+      "isMyDay": false,
+      "sortOrder": 3
+    }
+  ]
+}

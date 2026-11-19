@@ -1,0 +1,178 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-test:
+    name: Verify, Format & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Code Generation (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Check Code Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze Code
+        run: flutter analyze
+
+      - name: Run Unit & Widget Tests with Coverage
+        run: flutter test --coverage
+
+  build-android:
+    name: Build Signed Android APKs
+    needs: verify-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Code Generation
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Generate App Launcher Icons
+        run: dart run flutter_launcher_icons
+
+      - name: Decode Android Release Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          cat <<EOF > android/key.properties
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Build Split-per-ABI Release APKs
+        run: flutter build apk --release --split-per-abi
+
+      - name: Upload Android APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: daybreak-android-apks
+          path: build/app/outputs/flutter-apk/app-*-release.apk
+
+  build-windows:
+    name: Build Windows x64 Release
+    needs: verify-and-test
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Code Generation
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Windows Executable
+        run: flutter build windows --release
+
+      - name: Package Windows Release Archive
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath Daybreak-Windows-x64.zip
+
+      - name: Upload Windows x64 Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: daybreak-windows-x64
+          path: Daybreak-Windows-x64.zip
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-android, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Android Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: daybreak-android-apks
+          path: release-artifacts/
+
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: daybreak-windows-x64
+          path: release-artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Daybreak v1.0.${{ github.run_number }} 🌅
+          body: |
+            ## Daybreak Release v1.0.${{ github.run_number }} 🌅
+            *"Every morning is a fresh start."*
+
+            ### Assets Included
+            - **Android:** Signed split-per-ABI APKs (`arm64-v8a`, `armeabi-v7a`, `x86_64`)
+            - **Windows 11 / 10:** `Daybreak-Windows-x64.zip` (Native Win32 Fluent UI + Mica Alt)
+
+            ### Highlights
+            - Local-first sub-millisecond SQLite responsiveness via Drift.
+            - Native Windows 11 Mica Alt UI and Android Material 3 Expressive wallpaper theming.
+            - True midnight "My Day" daily reset without losing parent list associations.
+            - Native Android home-screen interactive widgets & Windows Compact Glance overlay.
+          files: release-artifacts/*
+          draft: false
+          prerelease: false

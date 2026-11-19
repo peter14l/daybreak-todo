@@ -1,0 +1,70 @@
+name: daybreak
+description: Every morning is a fresh start. A local-first, cross-platform task management app.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  
+  # State Management
+  flutter_riverpod: ^2.5.1
+  
+  # Local Database
+  drift: ^2.18.0
+  sqlite3_flutter_libs: ^0.5.24
+  sqlite3: ^2.4.3
+  path: ^1.9.0
+  path_provider: ^2.1.3
+  
+  # Cloud Sync & Auth
+  supabase_flutter: ^2.6.0
+  google_sign_in: ^6.2.1
+  flutter_secure_storage: ^9.2.2
+  app_links: ^6.3.3
+  
+  # UI & Platform
+  fluent_ui: ^4.13.0
+  flutter_acrylic: ^1.1.4
+  window_manager: ^0.4.3
+  dynamic_color: ^1.7.0
+  home_widget: ^0.7.0
+  
+  # Utilities
+  uuid: ^4.4.0
+  intl: ^0.20.2
+  flutter_markdown: ^0.7.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.11
+  drift_dev: ^2.18.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/icon/daybreak_logo.svg
+    - assets/icon/app_icon.png
+    - assets/icon/app_icon_foreground.png
+    - assets/data/seed_tasks.json
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/icon/app_icon.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/icon/app_icon_foreground.png
+  web: false
+  windows:
+    generate: true
+    image_path: assets/icon/app_icon.png
+    icon_size: 256
