@@ -286,6 +286,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
         ),
         endHeader: DragToMoveArea(
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Search input
@@ -316,8 +317,11 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 ),
               ),
               const SizedBox(width: 8),
-              const WindowCaption(
-                brightness: Brightness.dark,
+              const SizedBox(
+                width: 138,
+                child: WindowCaption(
+                  brightness: Brightness.dark,
+                ),
               ),
             ],
           ),
