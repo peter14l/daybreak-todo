@@ -6,10 +6,6 @@ import 'package:daybreak/ui/adaptive_app_shell.dart';
 import 'package:daybreak/ui/onboarding/onboarding_screen.dart';
 import 'package:daybreak/core/state/providers.dart';
 
-class MockOnboardingNotifier extends StateNotifier<bool?> {
-  MockOnboardingNotifier([bool? initial = true]) : super(initial);
-}
-
 void main() {
   group('Adaptive App Shell Rendering Tests', () {
     testWidgets('Renders OnboardingScreen when onboarding is false',
@@ -18,7 +14,7 @@ void main() {
         ProviderScope(
           overrides: [
             onboardingNotifierProvider
-                .overrideWith((ref) => MockOnboardingNotifier(false)),
+                .overrideWith((ref) => OnboardingNotifier(false)),
           ],
           child: const AdaptiveAppShell(),
         ),
@@ -37,7 +33,7 @@ void main() {
         ProviderScope(
           overrides: [
             onboardingNotifierProvider
-                .overrideWith((ref) => MockOnboardingNotifier(true)),
+                .overrideWith((ref) => OnboardingNotifier(true)),
             activeTasksStreamProvider.overrideWith((ref) => Stream.value([])),
             allListsStreamProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -78,7 +74,7 @@ void main() {
         ProviderScope(
           overrides: [
             onboardingNotifierProvider
-                .overrideWith((ref) => MockOnboardingNotifier(true)),
+                .overrideWith((ref) => OnboardingNotifier(true)),
             activeTasksStreamProvider.overrideWith((ref) => Stream.value([])),
             allListsStreamProvider.overrideWith((ref) => Stream.value([])),
           ],

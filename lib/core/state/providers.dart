@@ -35,8 +35,10 @@ const _onboardingStorageKey = 'daybreak_onboarding_completed';
 class OnboardingNotifier extends StateNotifier<bool?> {
   final _storage = const FlutterSecureStorage();
 
-  OnboardingNotifier() : super(null) {
-    _loadState();
+  OnboardingNotifier([bool? initial]) : super(initial) {
+    if (initial == null) {
+      _loadState();
+    }
   }
 
   Future<void> _loadState() async {
