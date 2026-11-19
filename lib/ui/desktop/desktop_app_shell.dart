@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' show DefaultMaterialLocalizations;
 import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,6 +110,11 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             backgroundColor: Colors.transparent,
           ),
         ),
+        localizationsDelegates: const [
+          FluentLocalizations.delegate,
+          DefaultMaterialLocalizations.delegate,
+          DefaultWidgetsLocalizations.delegate,
+        ],
         home:
             isCompact ? _buildCompactGlanceView() : _buildStandardDesktopView(),
       ),
