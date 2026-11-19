@@ -93,7 +93,7 @@ jobs:
           EOF
 
       - name: Build Split-per-ABI Release APKs
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release --split-per-abi --android-skip-build-dependency-validation
 
       - name: Upload Android Split APKs
         uses: actions/upload-artifact@v4
