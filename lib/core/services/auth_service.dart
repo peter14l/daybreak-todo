@@ -8,6 +8,8 @@ class AuthService {
   final SupabaseClient? _supabase;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId:
+        '597963892766-pidql1l9h5v1r783nd2tee8b8t7th3pg.apps.googleusercontent.com',
     scopes: ['email', 'profile'],
   );
 

@@ -6,6 +6,7 @@ import '../../core/state/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 import '../onboarding/why_daybreak_dialog.dart';
+import '../widgets/account_sync_dialog.dart';
 import '../widgets/backup_import_dialog.dart';
 import '../widgets/quick_add_bar.dart';
 import '../widgets/task_detail_panel.dart';
@@ -178,6 +179,15 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
                   ),
                   tooltip: 'Backup, Export & Import',
                   onPressed: () => BackupImportDialog.show(ctx),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.account_circle_outlined,
+                    color: currentTheme.accentColor,
+                    size: 20,
+                  ),
+                  tooltip: 'Account & Cloud Sync',
+                  onPressed: () => AccountSyncDialog.show(ctx),
                 ),
                 IconButton(
                   icon: Icon(

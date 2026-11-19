@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../db/app_database.dart';
+import '../services/auth_service.dart';
 import '../services/service_locator.dart';
 import '../services/task_service.dart';
 import '../services/my_day_rollover_service.dart';
@@ -11,6 +13,14 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final taskServiceProvider = Provider<TaskService>((ref) {
   return ServiceLocator.taskService;
+});
+
+final authServiceProvider = Provider<AuthService>((ref) {
+  return ServiceLocator.authService;
+});
+
+final currentUserProvider = StateProvider<User?>((ref) {
+  return ServiceLocator.authService.currentUser;
 });
 
 final activeViewIdProvider = StateProvider<String>((ref) => 'my-day');

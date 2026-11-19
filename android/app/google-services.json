@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "597963892766",
+    "project_id": "daybreak-cf27d",
+    "storage_bucket": "daybreak-cf27d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597963892766:android:92d0d98cf72dc44953660f",
+        "android_client_info": {
+          "package_name": "com.daybreak.daybreak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597963892766-g60gfblksm7dhncdelh97lu74402bafh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daybreak.daybreak",
+            "certificate_hash": "118167aea01302dad8c3792417953f61e5da00ec"
+          }
+        },
+        {
+          "client_id": "597963892766-pidql1l9h5v1r783nd2tee8b8t7th3pg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8OAELNGIdqzusELB0kLNZ088adNqg5pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597963892766-pidql1l9h5v1r783nd2tee8b8t7th3pg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

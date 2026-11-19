@@ -19,6 +19,7 @@ import '../../core/state/providers.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 import '../onboarding/why_daybreak_dialog.dart';
+import '../widgets/account_sync_dialog.dart';
 import '../widgets/backup_import_dialog.dart';
 import '../widgets/quick_add_bar.dart';
 import '../widgets/task_detail_panel.dart';
@@ -576,6 +577,19 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                   color: currentTheme.textColor,
                 ),
                 onPressed: () => BackupImportDialog.show(context),
+              ),
+            ),
+
+            // Account & Cloud Sync
+            Tooltip(
+              message: 'Account & Cloud Sync',
+              child: IconButton(
+                icon: Icon(
+                  Icons.account_circle_outlined,
+                  size: 16,
+                  color: currentTheme.accentColor,
+                ),
+                onPressed: () => AccountSyncDialog.show(context),
               ),
             ),
           ],
