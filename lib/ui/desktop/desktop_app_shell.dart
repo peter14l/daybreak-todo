@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart'
     show
+        Builder,
         DefaultMaterialLocalizations,
         DefaultWidgetsLocalizations,
         Icons,
@@ -138,9 +139,11 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
           data: currentTheme.toMaterialTheme(),
           child: Material(
             color: Colors.transparent,
-            child: isCompact
-                ? _buildCompactGlanceView(currentTheme)
-                : _buildStandardDesktopView(currentTheme),
+            child: Builder(
+              builder: (ctx) => isCompact
+                  ? _buildCompactGlanceView(currentTheme, ctx)
+                  : _buildStandardDesktopView(currentTheme, ctx),
+            ),
           ),
         ),
       ),
@@ -148,7 +151,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
   }
 
   /// Distraction-free Compact Glance mini-mode (360x540)
-  Widget _buildCompactGlanceView(DaybreakTheme currentTheme) {
+  Widget _buildCompactGlanceView(
+      DaybreakTheme currentTheme, BuildContext context) {
     final tasksAsync = ref.watch(activeTasksStreamProvider);
 
     return ScaffoldPage(
@@ -159,76 +163,80 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
         child: Column(
           children: [
             // Drag titlebar
-            DragToMoveArea(
-              child: Container(
-                height: 40,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: currentTheme.sidebarBackground,
-                  border: Border(
-                    bottom:
-                        BorderSide(color: currentTheme.borderColor, width: 1),
+            Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: currentTheme.sidebarBackground,
+                border: Border(
+                  bottom: BorderSide(color: currentTheme.borderColor, width: 1),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: DragToMoveArea(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.wb_sunny_rounded,
+                            size: 14,
+                            color: currentTheme.accentColor,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Daybreak Glance',
+                            style: TextStyle(
+                              color: currentTheme.textColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.wb_sunny_rounded,
-                      size: 14,
-                      color: currentTheme.accentColor,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Daybreak Glance',
-                      style: TextStyle(
-                        color: currentTheme.textColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.5,
-                      ),
-                    ),
-                    const Spacer(),
-                    Tooltip(
-                      message: 'Switch Theme (${currentTheme.displayName})',
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.palette_outlined,
-                          size: 13,
-                          color: currentTheme.accentColor,
-                        ),
-                        onPressed: () => ThemeSwitcherDialog.show(context),
-                      ),
-                    ),
-                    IconButton(
+                  Tooltip(
+                    message: 'Switch Theme (${currentTheme.displayName})',
+                    child: IconButton(
                       icon: Icon(
-                        _isAlwaysOnTop ? FluentIcons.pinned : FluentIcons.pin,
+                        Icons.palette_outlined,
                         size: 13,
-                        color: _isAlwaysOnTop
-                            ? currentTheme.accentColor
-                            : currentTheme.textMutedColor,
+                        color: currentTheme.accentColor,
                       ),
-                      onPressed: () async {
-                        setState(() => _isAlwaysOnTop = !_isAlwaysOnTop);
-                        await windowManager.setAlwaysOnTop(_isAlwaysOnTop);
-                      },
+                      onPressed: () => ThemeSwitcherDialog.show(context),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        FluentIcons.full_screen,
-                        size: 13,
-                        color: currentTheme.textMutedColor,
-                      ),
-                      onPressed: _toggleCompactGlanceMode,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      _isAlwaysOnTop ? FluentIcons.pinned : FluentIcons.pin,
+                      size: 13,
+                      color: _isAlwaysOnTop
+                          ? currentTheme.accentColor
+                          : currentTheme.textMutedColor,
                     ),
-                    IconButton(
-                      icon: Icon(
-                        FluentIcons.chrome_close,
-                        size: 13,
-                        color: currentTheme.textMutedColor,
-                      ),
-                      onPressed: () => windowManager.close(),
+                    onPressed: () async {
+                      setState(() => _isAlwaysOnTop = !_isAlwaysOnTop);
+                      await windowManager.setAlwaysOnTop(_isAlwaysOnTop);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      FluentIcons.full_screen,
+                      size: 13,
+                      color: currentTheme.textMutedColor,
                     ),
-                  ],
-                ),
+                    onPressed: _toggleCompactGlanceMode,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      FluentIcons.chrome_close,
+                      size: 13,
+                      color: currentTheme.textMutedColor,
+                    ),
+                    onPressed: () => windowManager.close(),
+                  ),
+                ],
               ),
             ),
 
@@ -297,7 +305,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
   }
 
   /// Full Standard Windows 11 Desktop View with NavigationView
-  Widget _buildStandardDesktopView(DaybreakTheme currentTheme) {
+  Widget _buildStandardDesktopView(
+      DaybreakTheme currentTheme, BuildContext context) {
     final activeView = ref.watch(activeViewIdProvider);
     final tasksAsync = ref.watch(activeTasksStreamProvider);
     final searchQuery = ref.watch(searchQueryProvider);
@@ -396,7 +405,6 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
           child: Align(
             alignment: AlignmentDirectional.centerStart,
             child: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
                   Icons.wb_sunny_rounded,
@@ -439,89 +447,87 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             ),
           ),
         ),
-        endHeader: DragToMoveArea(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Search input
-              SizedBox(
-                width: 220,
-                child: TextBox(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  placeholder: 'Search (Ctrl+F)',
-                  style: TextStyle(color: currentTheme.textColor, fontSize: 13),
-                  placeholderStyle: TextStyle(
-                    color: currentTheme.textMutedColor,
-                    fontSize: 13,
-                  ),
-                  decoration: WidgetStatePropertyAll(
-                    BoxDecoration(
-                      color: currentTheme.surface,
-                      borderRadius: currentTheme.borderRadius,
-                      border: Border.all(
-                        color: currentTheme.borderColor,
-                        width: 1,
-                      ),
+        endHeader: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Search input
+            SizedBox(
+              width: 220,
+              child: TextBox(
+                controller: _searchController,
+                focusNode: _searchFocusNode,
+                placeholder: 'Search (Ctrl+F)',
+                style: TextStyle(color: currentTheme.textColor, fontSize: 13),
+                placeholderStyle: TextStyle(
+                  color: currentTheme.textMutedColor,
+                  fontSize: 13,
+                ),
+                decoration: WidgetStatePropertyAll(
+                  BoxDecoration(
+                    color: currentTheme.surface,
+                    borderRadius: currentTheme.borderRadius,
+                    border: Border.all(
+                      color: currentTheme.borderColor,
+                      width: 1,
                     ),
                   ),
-                  onChanged: (val) {
-                    ref.read(searchQueryProvider.notifier).state = val;
-                  },
                 ),
+                onChanged: (val) {
+                  ref.read(searchQueryProvider.notifier).state = val;
+                },
               ),
-              const SizedBox(width: 8),
+            ),
+            const SizedBox(width: 8),
 
-              // Theme Switcher button
-              Tooltip(
-                message: 'Switch Theme (${currentTheme.displayName})',
-                child: IconButton(
-                  icon: Icon(
-                    Icons.palette_outlined,
-                    size: 16,
-                    color: currentTheme.accentColor,
-                  ),
-                  onPressed: () => ThemeSwitcherDialog.show(context),
+            // Theme Switcher button
+            Tooltip(
+              message: 'Switch Theme (${currentTheme.displayName})',
+              child: IconButton(
+                icon: Icon(
+                  Icons.palette_outlined,
+                  size: 16,
+                  color: currentTheme.accentColor,
                 ),
+                onPressed: () => ThemeSwitcherDialog.show(context),
               ),
+            ),
 
-              // Compact glance button
-              Tooltip(
-                message: 'Compact Glance Mode (Ctrl+M)',
-                child: IconButton(
-                  icon: Icon(
-                    FluentIcons.mini_expand,
-                    size: 14,
-                    color: currentTheme.textColor,
-                  ),
-                  onPressed: _toggleCompactGlanceMode,
+            // Compact glance button
+            Tooltip(
+              message: 'Compact Glance Mode (Ctrl+M)',
+              child: IconButton(
+                icon: Icon(
+                  FluentIcons.mini_expand,
+                  size: 14,
+                  color: currentTheme.textColor,
                 ),
+                onPressed: _toggleCompactGlanceMode,
               ),
+            ),
 
-              // Why Daybreak
-              Tooltip(
-                message: 'Why Daybreak?',
-                child: IconButton(
-                  icon: Icon(
-                    FluentIcons.info,
-                    size: 14,
-                    color: currentTheme.textColor,
-                  ),
-                  onPressed: () => WhyDaybreakDialog.show(context),
+            // Why Daybreak
+            Tooltip(
+              message: 'Why Daybreak?',
+              child: IconButton(
+                icon: Icon(
+                  FluentIcons.info,
+                  size: 14,
+                  color: currentTheme.textColor,
                 ),
+                onPressed: () => WhyDaybreakDialog.show(context),
               ),
-              const SizedBox(width: 8),
+            ),
+            const SizedBox(width: 8),
 
-              // Native frameless window caption controls
-              const SizedBox(
-                width: 138,
-                child: WindowCaption(
-                  brightness: Brightness.dark,
-                ),
+            // Native frameless window caption controls
+            const SizedBox(
+              width: 138,
+              child: WindowCaption(
+                brightness: Brightness.dark,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       pane: NavigationPane(

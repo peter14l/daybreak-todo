@@ -17,10 +17,18 @@ Future<void> main() async {
 
   if (isDesktop) {
     await windowManager.ensureInitialized();
-    await windowManager.setTitle('Daybreak');
-    await windowManager.setSize(const Size(1200, 780));
-    await windowManager.setMinimumSize(const Size(900, 600));
-    await windowManager.center();
+    const windowOptions = WindowOptions(
+      size: Size(1200, 780),
+      minimumSize: Size(900, 600),
+      center: true,
+      title: 'Daybreak',
+      titleBarStyle: TitleBarStyle.hidden,
+      windowButtonVisibility: false,
+    );
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
   }
 
   runApp(
