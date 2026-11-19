@@ -22,9 +22,14 @@ Future<void> main() async {
       minimumSize: Size(900, 600),
       center: true,
       title: 'Daybreak',
-      titleBarStyle: TitleBarStyle.normal,
+      titleBarStyle: TitleBarStyle.hidden,
+      windowButtonVisibility: false,
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.setTitleBarStyle(
+        TitleBarStyle.hidden,
+        windowButtonVisibility: false,
+      );
       await windowManager.show();
       await windowManager.focus();
     });
