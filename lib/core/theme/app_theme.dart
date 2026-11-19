@@ -145,7 +145,7 @@ class DaybreakTheme {
         outline: borderColor,
         outlineVariant: borderColor,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surface,
         elevation: 0,
         shape: RoundedRectangleBorder(

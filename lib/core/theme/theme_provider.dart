@@ -32,7 +32,7 @@ class ThemeNotifier extends StateNotifier<AppThemeStyle> {
   }
 
   void cycleNext() {
-    final values = AppThemeStyle.values;
+    const values = AppThemeStyle.values;
     final nextIdx = (values.indexOf(state) + 1) % values.length;
     setTheme(values[nextIdx]);
   }

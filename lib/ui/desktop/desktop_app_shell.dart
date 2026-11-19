@@ -1,4 +1,4 @@
-import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart'
     show
         DefaultMaterialLocalizations,
@@ -125,19 +125,19 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
           _toggleCompactGlanceMode();
         },
       },
-      child: fluent.FluentApp(
+      child: FluentApp(
         title: 'Daybreak',
         debugShowCheckedModeBanner: false,
         theme: currentTheme.toFluentTheme(),
         localizationsDelegates: const [
-          fluent.FluentLocalizations.delegate,
+          FluentLocalizations.delegate,
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
         ],
         home: Theme(
           data: currentTheme.toMaterialTheme(),
           child: Material(
-            color: fluent.Colors.transparent,
+            color: Colors.transparent,
             child: isCompact
                 ? _buildCompactGlanceView(currentTheme)
                 : _buildStandardDesktopView(currentTheme),
@@ -151,7 +151,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
   Widget _buildCompactGlanceView(DaybreakTheme currentTheme) {
     final tasksAsync = ref.watch(activeTasksStreamProvider);
 
-    return fluent.ScaffoldPage(
+    return ScaffoldPage(
       content: Container(
         color: currentTheme.isTranslucent
             ? const Color(0xE618181B)
@@ -159,7 +159,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
         child: Column(
           children: [
             // Drag titlebar
-            fluent.DragToMoveArea(
+            DragToMoveArea(
               child: Container(
                 height: 40,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -187,9 +187,9 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                       ),
                     ),
                     const Spacer(),
-                    fluent.Tooltip(
+                    Tooltip(
                       message: 'Switch Theme (${currentTheme.displayName})',
-                      child: fluent.IconButton(
+                      child: IconButton(
                         icon: Icon(
                           Icons.palette_outlined,
                           size: 13,
@@ -198,11 +198,9 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                         onPressed: () => ThemeSwitcherDialog.show(context),
                       ),
                     ),
-                    fluent.IconButton(
+                    IconButton(
                       icon: Icon(
-                        _isAlwaysOnTop
-                            ? fluent.FluentIcons.pinned
-                            : fluent.FluentIcons.pin,
+                        _isAlwaysOnTop ? FluentIcons.pinned : FluentIcons.pin,
                         size: 13,
                         color: _isAlwaysOnTop
                             ? currentTheme.accentColor
@@ -213,17 +211,17 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                         await windowManager.setAlwaysOnTop(_isAlwaysOnTop);
                       },
                     ),
-                    fluent.IconButton(
+                    IconButton(
                       icon: Icon(
-                        fluent.FluentIcons.full_screen,
+                        FluentIcons.full_screen,
                         size: 13,
                         color: currentTheme.textMutedColor,
                       ),
                       onPressed: _toggleCompactGlanceMode,
                     ),
-                    fluent.IconButton(
+                    IconButton(
                       icon: Icon(
-                        fluent.FluentIcons.chrome_close,
+                        FluentIcons.chrome_close,
                         size: 13,
                         color: currentTheme.textMutedColor,
                       ),
@@ -278,7 +276,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                   );
                 },
                 loading: () => Center(
-                  child: fluent.ProgressRing(
+                  child: ProgressRing(
                     activeColor: currentTheme.accentColor,
                   ),
                 ),
@@ -307,7 +305,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
 
     final mainContent = Container(
       color: currentTheme.isTranslucent
-          ? fluent.Colors.transparent
+          ? Colors.transparent
           : currentTheme.scaffoldBackground,
       child: Column(
         children: [
@@ -373,7 +371,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 );
               },
               loading: () => Center(
-                child: fluent.ProgressRing(
+                child: ProgressRing(
                   activeColor: currentTheme.accentColor,
                 ),
               ),
@@ -392,9 +390,9 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
       ),
     );
 
-    return fluent.NavigationView(
-      titleBar: fluent.TitleBar(
-        title: fluent.DragToMoveArea(
+    return NavigationView(
+      titleBar: TitleBar(
+        title: DragToMoveArea(
           child: Align(
             alignment: AlignmentDirectional.centerStart,
             child: Row(
@@ -441,7 +439,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             ),
           ),
         ),
-        endHeader: fluent.DragToMoveArea(
+        endHeader: DragToMoveArea(
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -449,7 +447,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
               // Search input
               SizedBox(
                 width: 220,
-                child: fluent.TextBox(
+                child: TextBox(
                   controller: _searchController,
                   focusNode: _searchFocusNode,
                   placeholder: 'Search (Ctrl+F)',
@@ -458,7 +456,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                     color: currentTheme.textMutedColor,
                     fontSize: 13,
                   ),
-                  decoration: fluent.WidgetStatePropertyAll(
+                  decoration: WidgetStatePropertyAll(
                     BoxDecoration(
                       color: currentTheme.surface,
                       borderRadius: currentTheme.borderRadius,
@@ -476,9 +474,9 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
               const SizedBox(width: 8),
 
               // Theme Switcher button
-              fluent.Tooltip(
+              Tooltip(
                 message: 'Switch Theme (${currentTheme.displayName})',
-                child: fluent.IconButton(
+                child: IconButton(
                   icon: Icon(
                     Icons.palette_outlined,
                     size: 16,
@@ -489,11 +487,11 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
               ),
 
               // Compact glance button
-              fluent.Tooltip(
+              Tooltip(
                 message: 'Compact Glance Mode (Ctrl+M)',
-                child: fluent.IconButton(
+                child: IconButton(
                   icon: Icon(
-                    fluent.FluentIcons.mini_expand,
+                    FluentIcons.mini_expand,
                     size: 14,
                     color: currentTheme.textColor,
                   ),
@@ -502,11 +500,11 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
               ),
 
               // Why Daybreak
-              fluent.Tooltip(
+              Tooltip(
                 message: 'Why Daybreak?',
-                child: fluent.IconButton(
+                child: IconButton(
                   icon: Icon(
-                    fluent.FluentIcons.info,
+                    FluentIcons.info,
                     size: 14,
                     color: currentTheme.textColor,
                   ),
@@ -518,7 +516,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
               // Native frameless window caption controls
               const SizedBox(
                 width: 138,
-                child: fluent.WindowCaption(
+                child: WindowCaption(
                   brightness: Brightness.dark,
                 ),
               ),
@@ -526,7 +524,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
           ),
         ),
       ),
-      pane: fluent.NavigationPane(
+      pane: NavigationPane(
         selected: _selectedTopIndex,
         onChanged: (index) {
           setState(() {
@@ -536,10 +534,10 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             }
           });
         },
-        displayMode: fluent.PaneDisplayMode.compact,
+        displayMode: PaneDisplayMode.compact,
         items: [
-          fluent.PaneItem(
-            icon: Icon(fluent.FluentIcons.sunny,
+          PaneItem(
+            icon: Icon(FluentIcons.sunny,
                 color: _selectedTopIndex == 0
                     ? currentTheme.accentColor
                     : currentTheme.textMutedColor),
@@ -547,8 +545,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 Text('My Day', style: TextStyle(color: currentTheme.textColor)),
             body: mainContent,
           ),
-          fluent.PaneItem(
-            icon: Icon(fluent.FluentIcons.favorite_star,
+          PaneItem(
+            icon: Icon(FluentIcons.favorite_star,
                 color: _selectedTopIndex == 1
                     ? currentTheme.accentColor
                     : currentTheme.textMutedColor),
@@ -556,8 +554,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 style: TextStyle(color: currentTheme.textColor)),
             body: mainContent,
           ),
-          fluent.PaneItem(
-            icon: Icon(fluent.FluentIcons.calendar,
+          PaneItem(
+            icon: Icon(FluentIcons.calendar,
                 color: _selectedTopIndex == 2
                     ? currentTheme.accentColor
                     : currentTheme.textMutedColor),
@@ -565,8 +563,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 style: TextStyle(color: currentTheme.textColor)),
             body: mainContent,
           ),
-          fluent.PaneItem(
-            icon: Icon(fluent.FluentIcons.check_list,
+          PaneItem(
+            icon: Icon(FluentIcons.check_list,
                 color: _selectedTopIndex == 3
                     ? currentTheme.accentColor
                     : currentTheme.textMutedColor),
@@ -574,8 +572,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 style: TextStyle(color: currentTheme.textColor)),
             body: mainContent,
           ),
-          fluent.PaneItemSeparator(),
-          fluent.PaneItemHeader(
+          PaneItemSeparator(),
+          PaneItemHeader(
             header: Text(
               'LISTS',
               style: TextStyle(
@@ -586,12 +584,12 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
               ),
             ),
           ),
-          ...customListsAsync.when<List<fluent.NavigationPaneItem>>(
+          ...customListsAsync.when<List<NavigationPaneItem>>(
             data: (lists) => lists
                 .map(
-                  (l) => fluent.PaneItemAction(
+                  (l) => PaneItemAction(
                     icon: Icon(
-                      fluent.FluentIcons.bulleted_list,
+                      FluentIcons.bulleted_list,
                       color: currentTheme.textMutedColor,
                     ),
                     title: Text(l.name,
@@ -603,8 +601,8 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                   ),
                 )
                 .toList(),
-            loading: () => <fluent.NavigationPaneItem>[],
-            error: (_, __) => <fluent.NavigationPaneItem>[],
+            loading: () => <NavigationPaneItem>[],
+            error: (_, __) => <NavigationPaneItem>[],
           ),
         ],
       ),
