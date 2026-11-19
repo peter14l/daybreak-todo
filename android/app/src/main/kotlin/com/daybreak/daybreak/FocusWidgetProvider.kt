@@ -3,6 +3,7 @@ package com.daybreak.daybreak
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +11,17 @@ import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetPlugin
 
 class FocusWidgetProvider : AppWidgetProvider() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val thisWidget = ComponentName(context, FocusWidgetProvider::class.java)
+        val appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget)
+        if (appWidgetIds != null && appWidgetIds.isNotEmpty()) {
+            onUpdate(context, appWidgetManager, appWidgetIds)
+        }
+    }
+
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -19,7 +31,7 @@ class FocusWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.focus_widget)
             val widgetData = HomeWidgetPlugin.getData(context)
 
-            val topTask = widgetData.getString("daybreak_top_task", "Focus on your day")
+            val topTask = widgetData.getString("daybreak_top_task", "Focus on your day") ?: "Focus on your day"
             val total = widgetData.getInt("daybreak_total_count", 0)
             val completed = widgetData.getInt("daybreak_completed_count", 0)
             val remaining = (total - completed).coerceAtLeast(0)
@@ -34,7 +46,7 @@ class FocusWidgetProvider : AppWidgetProvider() {
             }
             val pendingIntent = PendingIntent.getActivity(
                 context,
-                0,
+                appWidgetId,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

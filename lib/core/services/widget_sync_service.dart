@@ -128,11 +128,13 @@ class WidgetSyncService {
       await HomeWidget.updateWidget(
         name: androidWidgetMyDay,
         androidName: androidWidgetMyDay,
+        qualifiedAndroidName: 'com.daybreak.daybreak.MyDayWidgetProvider',
       );
 
       await HomeWidget.updateWidget(
         name: androidWidgetFocus,
         androidName: androidWidgetFocus,
+        qualifiedAndroidName: 'com.daybreak.daybreak.FocusWidgetProvider',
       );
     } catch (_) {
       // Gracefully ignore widget sync errors on unsupported platforms or during tests

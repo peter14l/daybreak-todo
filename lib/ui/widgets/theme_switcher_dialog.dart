@@ -21,100 +21,103 @@ class ThemeSwitcherDialog extends ConsumerWidget {
 
     return Dialog(
       backgroundColor: currentTheme.surface,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(
         borderRadius: currentTheme.borderRadius,
         side: BorderSide(color: currentTheme.borderColor, width: 1),
       ),
-      child: Container(
-        width: 480,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.palette_outlined,
-                  color: currentTheme.accentColor,
-                  size: 22,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'Select Theme Archetype',
-                  style: TextStyle(
-                    color: currentTheme.textColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.palette_outlined,
+                    color: currentTheme.accentColor,
+                    size: 22,
                   ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Select Theme Archetype',
+                    style: TextStyle(
+                      color: currentTheme.textColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: Icon(Icons.close, color: currentTheme.textMutedColor),
+                    onPressed: () => Navigator.of(context).pop(),
+                    splashRadius: 18,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Switch seamlessly between native Windows 11 Mica, Material 3 Expressive, and high-density Linear Obsidian.',
+                style: TextStyle(
+                  color: currentTheme.textMutedColor,
+                  fontSize: 13,
+                  height: 1.4,
                 ),
-                const Spacer(),
-                IconButton(
-                  icon: Icon(Icons.close, color: currentTheme.textMutedColor),
+              ),
+              const SizedBox(height: 20),
+
+              // Option 1: Fluent Luxe
+              _buildThemeOption(
+                context: context,
+                ref: ref,
+                style: AppThemeStyle.fluentLuxe,
+                currentTheme: currentTheme,
+                isSelected: activeStyle == AppThemeStyle.fluentLuxe,
+              ),
+              const SizedBox(height: 10),
+
+              // Option 2: Sunrise Warmth
+              _buildThemeOption(
+                context: context,
+                ref: ref,
+                style: AppThemeStyle.sunriseWarmth,
+                currentTheme: currentTheme,
+                isSelected: activeStyle == AppThemeStyle.sunriseWarmth,
+              ),
+              const SizedBox(height: 10),
+
+              // Option 3: Linear Obsidian
+              _buildThemeOption(
+                context: context,
+                ref: ref,
+                style: AppThemeStyle.linearObsidian,
+                currentTheme: currentTheme,
+                isSelected: activeStyle == AppThemeStyle.linearObsidian,
+              ),
+              const SizedBox(height: 20),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: currentTheme.accentColor,
+                    foregroundColor: const Color(0xFF121212),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: currentTheme.borderRadius,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                  ),
                   onPressed: () => Navigator.of(context).pop(),
-                  splashRadius: 18,
+                  child: const Text('Done',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Switch seamlessly between native Windows 11 Mica, Material 3 Expressive, and high-density Linear Obsidian.',
-              style: TextStyle(
-                color: currentTheme.textMutedColor,
-                fontSize: 13,
-                height: 1.4,
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // Option 1: Fluent Luxe
-            _buildThemeOption(
-              context: context,
-              ref: ref,
-              style: AppThemeStyle.fluentLuxe,
-              currentTheme: currentTheme,
-              isSelected: activeStyle == AppThemeStyle.fluentLuxe,
-            ),
-            const SizedBox(height: 10),
-
-            // Option 2: Sunrise Warmth
-            _buildThemeOption(
-              context: context,
-              ref: ref,
-              style: AppThemeStyle.sunriseWarmth,
-              currentTheme: currentTheme,
-              isSelected: activeStyle == AppThemeStyle.sunriseWarmth,
-            ),
-            const SizedBox(height: 10),
-
-            // Option 3: Linear Obsidian
-            _buildThemeOption(
-              context: context,
-              ref: ref,
-              style: AppThemeStyle.linearObsidian,
-              currentTheme: currentTheme,
-              isSelected: activeStyle == AppThemeStyle.linearObsidian,
-            ),
-            const SizedBox(height: 20),
-
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: currentTheme.accentColor,
-                  foregroundColor: const Color(0xFF121212),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: currentTheme.borderRadius,
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Done',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -22,8 +22,7 @@ Future<void> main() async {
       minimumSize: Size(900, 600),
       center: true,
       title: 'Daybreak',
-      titleBarStyle: TitleBarStyle.hidden,
-      windowButtonVisibility: false,
+      titleBarStyle: TitleBarStyle.normal,
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();

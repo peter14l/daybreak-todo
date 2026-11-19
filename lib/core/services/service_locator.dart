@@ -59,9 +59,10 @@ class ServiceLocator {
     microsoftImportService = MicrosoftTodoImportService(taskDao, taskListDao);
     myDayRolloverService = MyDayRolloverService(database);
 
-    // Perform My Day midnight rollover check and seed data
+    // Perform My Day midnight rollover check, seed data, and sync widgets
     await myDayRolloverService.performRolloverCheck();
     await taskService.seedInitialDataIfEmpty();
+    await taskService.refreshWidgets();
 
     _initialized = true;
   }

@@ -164,7 +164,7 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
                     size: 20,
                   ),
                   tooltip: 'Switch Theme (${currentTheme.displayName})',
-                  onPressed: () => ThemeSwitcherDialog.show(context),
+                  onPressed: () => ThemeSwitcherDialog.show(ctx),
                 ),
                 IconButton(
                   icon: Icon(
@@ -173,7 +173,7 @@ class _MobileAppShellState extends ConsumerState<MobileAppShell> {
                     size: 20,
                   ),
                   tooltip: 'Why Daybreak?',
-                  onPressed: () => WhyDaybreakDialog.show(context),
+                  onPressed: () => WhyDaybreakDialog.show(ctx),
                 ),
               ],
             ),

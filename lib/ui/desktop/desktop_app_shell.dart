@@ -518,15 +518,6 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                 onPressed: () => WhyDaybreakDialog.show(context),
               ),
             ),
-            const SizedBox(width: 8),
-
-            // Native frameless window caption controls
-            const SizedBox(
-              width: 138,
-              child: WindowCaption(
-                brightness: Brightness.dark,
-              ),
-            ),
           ],
         ),
       ),
