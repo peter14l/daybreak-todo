@@ -3,15 +3,41 @@ import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:daybreak/ui/adaptive_app_shell.dart';
+import 'package:daybreak/ui/onboarding/onboarding_screen.dart';
 import 'package:daybreak/core/state/providers.dart';
+
+class MockOnboardingNotifier extends StateNotifier<bool?> {
+  MockOnboardingNotifier([bool? initial = true]) : super(initial);
+}
 
 void main() {
   group('Adaptive App Shell Rendering Tests', () {
+    testWidgets('Renders OnboardingScreen when onboarding is false',
+        (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            onboardingNotifierProvider
+                .overrideWith((ref) => MockOnboardingNotifier(false)),
+          ],
+          child: const AdaptiveAppShell(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OnboardingScreen), findsOneWidget);
+      expect(find.text('Every morning is a fresh start.'), findsOneWidget);
+      expect(find.text('Skip'), findsOneWidget);
+    });
+
     testWidgets('Renders Material 3 NavigationBar when running in mobile mode',
         (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            onboardingNotifierProvider
+                .overrideWith((ref) => MockOnboardingNotifier(true)),
             activeTasksStreamProvider.overrideWith((ref) => Stream.value([])),
             allListsStreamProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -51,6 +77,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            onboardingNotifierProvider
+                .overrideWith((ref) => MockOnboardingNotifier(true)),
             activeTasksStreamProvider.overrideWith((ref) => Stream.value([])),
             allListsStreamProvider.overrideWith((ref) => Stream.value([])),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../db/app_database.dart';
@@ -28,6 +29,44 @@ final activeViewIdProvider = StateProvider<String>((ref) => 'my-day');
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 final isCompactGlanceProvider = StateProvider<bool>((ref) => false);
+
+const _onboardingStorageKey = 'daybreak_onboarding_completed';
+
+class OnboardingNotifier extends StateNotifier<bool?> {
+  final _storage = const FlutterSecureStorage();
+
+  OnboardingNotifier() : super(null) {
+    _loadState();
+  }
+
+  Future<void> _loadState() async {
+    try {
+      final value = await _storage.read(key: _onboardingStorageKey);
+      state = value == 'true';
+    } catch (_) {
+      state = false;
+    }
+  }
+
+  Future<void> completeOnboarding() async {
+    state = true;
+    try {
+      await _storage.write(key: _onboardingStorageKey, value: 'true');
+    } catch (_) {}
+  }
+
+  Future<void> resetOnboarding() async {
+    state = false;
+    try {
+      await _storage.delete(key: _onboardingStorageKey);
+    } catch (_) {}
+  }
+}
+
+final onboardingNotifierProvider =
+    StateNotifierProvider<OnboardingNotifier, bool?>((ref) {
+  return OnboardingNotifier();
+});
 
 /// Selected task for the detail inspector pane
 final selectedTaskIdProvider = StateProvider<String?>((ref) => null);
