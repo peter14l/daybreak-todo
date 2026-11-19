@@ -211,7 +211,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
     final customListsAsync = ref.watch(allListsStreamProvider);
 
     return NavigationView(
-      appBar: NavigationAppBar(
+      titleBar: TitleBar(
         title: const DragToMoveArea(
           child: Align(
             alignment: AlignmentDirectional.centerStart,
@@ -221,7 +221,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             ),
           ),
         ),
-        actions: DragToMoveArea(
+        endHeader: DragToMoveArea(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -288,26 +288,26 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             body: const SizedBox.shrink(),
           ),
           PaneItem(
-            icon: const Icon(FluentIcons.checklist),
+            icon: const Icon(FluentIcons.check_list),
             title: const Text('All Tasks'),
             body: const SizedBox.shrink(),
           ),
-        ],
-        customPaneItems: [
-          const PaneItemSeparator(),
+          PaneItemSeparator(),
           PaneItemHeader(header: const Text('Lists')),
-          ...customListsAsync.when(
-            data: (lists) => lists.map(
-              (l) => PaneItemAction(
-                icon: const Icon(FluentIcons.bulleted_list),
-                title: Text(l.name),
-                onTap: () {
-                  ref.read(activeViewIdProvider.notifier).state = l.id;
-                },
-              ),
-            ),
-            loading: () => [],
-            error: (_, __) => [],
+          ...customListsAsync.when<List<NavigationPaneItem>>(
+            data: (lists) => lists
+                .map(
+                  (l) => PaneItemAction(
+                    icon: const Icon(FluentIcons.bulleted_list),
+                    title: Text(l.name),
+                    onTap: () {
+                      ref.read(activeViewIdProvider.notifier).state = l.id;
+                    },
+                  ),
+                )
+                .toList(),
+            loading: () => <NavigationPaneItem>[],
+            error: (_, __) => <NavigationPaneItem>[],
           ),
         ],
       ),
