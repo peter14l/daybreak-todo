@@ -210,6 +210,63 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
     final searchQuery = ref.watch(searchQueryProvider);
     final customListsAsync = ref.watch(allListsStreamProvider);
 
+    final mainContent = Container(
+      color: Colors.transparent,
+      child: Column(
+        children: [
+          // Active list header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              activeView == 'my-day'
+                  ? 'My Day 🌅'
+                  : activeView == 'important'
+                      ? 'Important ⭐'
+                      : activeView == 'planned'
+                          ? 'Planned 📅'
+                          : activeView == 'all'
+                              ? 'All Tasks 📋'
+                              : 'Custom List',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+
+          // Tasks List
+          Expanded(
+            child: tasksAsync.when(
+              data: (tasks) {
+                var filtered = tasks;
+                if (searchQuery.isNotEmpty) {
+                  filtered = tasks
+                      .where((t) => t.title
+                          .toLowerCase()
+                          .contains(searchQuery.toLowerCase()))
+                      .toList();
+                }
+
+                if (filtered.isEmpty) {
+                  return const Center(
+                    child: Text('No tasks here. Press Ctrl+N to create one!'),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: filtered.length,
+                  itemBuilder: (context, idx) => TaskItemCard(task: tasks[idx]),
+                );
+              },
+              loading: () => const Center(child: ProgressRing()),
+              error: (err, _) => Center(child: Text('Error: $err')),
+            ),
+          ),
+
+          // Quick add bar
+          QuickAddBar(focusNode: _quickAddFocusNode),
+        ],
+      ),
+    );
+
     return NavigationView(
       titleBar: TitleBar(
         title: const DragToMoveArea(
@@ -275,22 +332,22 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
           PaneItem(
             icon: const Icon(FluentIcons.sunny),
             title: const Text('My Day'),
-            body: const SizedBox.shrink(),
+            body: mainContent,
           ),
           PaneItem(
             icon: const Icon(FluentIcons.favorite_star),
             title: const Text('Important'),
-            body: const SizedBox.shrink(),
+            body: mainContent,
           ),
           PaneItem(
             icon: const Icon(FluentIcons.calendar),
             title: const Text('Planned'),
-            body: const SizedBox.shrink(),
+            body: mainContent,
           ),
           PaneItem(
             icon: const Icon(FluentIcons.check_list),
             title: const Text('All Tasks'),
-            body: const SizedBox.shrink(),
+            body: mainContent,
           ),
           PaneItemSeparator(),
           PaneItemHeader(header: const Text('Lists')),
@@ -300,6 +357,7 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
                   (l) => PaneItemAction(
                     icon: const Icon(FluentIcons.bulleted_list),
                     title: Text(l.name),
+                    body: mainContent,
                     onTap: () {
                       ref.read(activeViewIdProvider.notifier).state = l.id;
                     },
@@ -310,64 +368,6 @@ class _DesktopAppShellState extends ConsumerState<DesktopAppShell>
             error: (_, __) => <NavigationPaneItem>[],
           ),
         ],
-      ),
-      content: Container(
-        color: Colors.transparent,
-        child: Column(
-          children: [
-            // Active list header
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                activeView == 'my-day'
-                    ? 'My Day 🌅'
-                    : activeView == 'important'
-                        ? 'Important ⭐'
-                        : activeView == 'planned'
-                            ? 'Planned 📅'
-                            : activeView == 'all'
-                                ? 'All Tasks 📋'
-                                : 'Custom List',
-                style:
-                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            // Tasks List
-            Expanded(
-              child: tasksAsync.when(
-                data: (tasks) {
-                  var filtered = tasks;
-                  if (searchQuery.isNotEmpty) {
-                    filtered = tasks
-                        .where((t) => t.title
-                            .toLowerCase()
-                            .contains(searchQuery.toLowerCase()))
-                        .toList();
-                  }
-
-                  if (filtered.isEmpty) {
-                    return const Center(
-                      child: Text('No tasks here. Press Ctrl+N to create one!'),
-                    );
-                  }
-
-                  return ListView.builder(
-                    itemCount: filtered.length,
-                    itemBuilder: (context, idx) =>
-                        TaskItemCard(task: tasks[idx]),
-                  );
-                },
-                loading: () => const Center(child: ProgressRing()),
-                error: (err, _) => Center(child: Text('Error: $err')),
-              ),
-            ),
-
-            // Quick add bar
-            QuickAddBar(focusNode: _quickAddFocusNode),
-          ],
-        ),
       ),
     );
   }
