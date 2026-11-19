@@ -20,7 +20,7 @@ class ServiceLocator {
   static late TaskService taskService;
   static late SyncService syncService;
   static late AuthService authService;
-  static late MicrosoftImportService microsoftImportService;
+  static late MicrosoftTodoImportService microsoftImportService;
   static late MyDayRolloverService myDayRolloverService;
 
   static bool _initialized = false;
@@ -56,7 +56,7 @@ class ServiceLocator {
     authService = AuthService(client);
     syncService = SyncService(database, syncOutboxDao, client);
     taskService = TaskService(taskDao, taskListDao, subtaskDao, syncOutboxDao);
-    microsoftImportService = MicrosoftImportService(taskDao, taskListDao);
+    microsoftImportService = MicrosoftTodoImportService(taskDao, taskListDao);
     myDayRolloverService = MyDayRolloverService(database);
 
     // Perform My Day midnight rollover check and seed data

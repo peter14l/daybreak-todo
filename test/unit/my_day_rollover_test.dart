@@ -35,7 +35,7 @@ void main() {
         'isCompleted': false,
       };
 
-      final todayIso = '2026-11-19';
+      const todayIso = '2026-11-19';
 
       // Simulate rollover logic
       if ((task['myDayDate'] as String).compareTo(todayIso) < 0 &&

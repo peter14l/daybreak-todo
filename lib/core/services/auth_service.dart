@@ -23,7 +23,8 @@ class AuthService {
 
   /// Sign in with Google
   Future<AuthResponse?> signInWithGoogle() async {
-    if (_supabase == null) return null;
+    final client = _supabase;
+    if (client == null) return null;
 
     if (isAndroid) {
       final googleUser = await _googleSignIn.signIn();
@@ -37,7 +38,7 @@ class AuthService {
         throw Exception('No ID Token found from Google Sign-In');
       }
 
-      final response = await _supabase!.auth.signInWithIdToken(
+      final response = await client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
         accessToken: accessToken,
@@ -53,7 +54,7 @@ class AuthService {
       return response;
     } else {
       // Windows desktop browser OAuth flow
-      await _supabase!.auth.signInWithOAuth(
+      await client.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: 'daybreak://login-callback',
       );
@@ -63,9 +64,10 @@ class AuthService {
 
   /// Sign in with Microsoft (Azure) with Tasks.Read scope
   Future<void> signInWithMicrosoft() async {
-    if (_supabase == null) return;
+    final client = _supabase;
+    if (client == null) return;
 
-    await _supabase!.auth.signInWithOAuth(
+    await client.auth.signInWithOAuth(
       OAuthProvider.azure,
       redirectTo: isAndroid
           ? 'com.daybreak.daybreak://login-callback'

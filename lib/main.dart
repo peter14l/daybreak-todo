@@ -19,7 +19,7 @@ Future<void> main() async {
     await windowManager.ensureInitialized();
     await windowManager.setTitle('Daybreak');
     await windowManager.setSize(const Size(1200, 780));
-    await windowManager.setMinSize(const Size(900, 600));
+    await windowManager.setMinimumSize(const Size(900, 600));
     await windowManager.center();
   }
 

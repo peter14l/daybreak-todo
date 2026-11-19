@@ -27,6 +27,7 @@ dependencies:
   google_sign_in: ^6.2.1
   flutter_secure_storage: ^9.2.2
   app_links: ^6.3.3
+  http: ^1.2.0
   
   # UI & Platform
   fluent_ui: ^4.13.0
