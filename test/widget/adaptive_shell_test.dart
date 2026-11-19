@@ -23,10 +23,22 @@ void main() {
 
       // Verify Android M3E NavigationBar is rendered
       expect(find.byType(NavigationBar), findsOneWidget);
-      expect(find.text('My Day'), findsOneWidget);
-      expect(find.text('Important'), findsOneWidget);
-      expect(find.text('Planned'), findsOneWidget);
-      expect(find.text('All Tasks'), findsOneWidget);
+      expect(
+          find.descendant(
+              of: find.byType(NavigationBar), matching: find.text('My Day')),
+          findsOneWidget);
+      expect(
+          find.descendant(
+              of: find.byType(NavigationBar), matching: find.text('Important')),
+          findsOneWidget);
+      expect(
+          find.descendant(
+              of: find.byType(NavigationBar), matching: find.text('Planned')),
+          findsOneWidget);
+      expect(
+          find.descendant(
+              of: find.byType(NavigationBar), matching: find.text('All Tasks')),
+          findsOneWidget);
     });
 
     testWidgets('Renders Fluent NavigationView when running in desktop mode',
