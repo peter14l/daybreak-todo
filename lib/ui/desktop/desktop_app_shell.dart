@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
+
+import '../../core/db/app_database.dart';
 import '../../core/platform/platform_config.dart';
 import '../../core/state/providers.dart';
 import '../../core/theme/app_theme.dart';
