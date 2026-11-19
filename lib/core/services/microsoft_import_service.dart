@@ -248,7 +248,7 @@ class MicrosoftTodoImportService {
                 'dueDate': t.dueDate?.toIso8601String(),
                 'reminderAt': t.reminderAt?.toIso8601String(),
                 'recurrenceRule': t.recurrenceRule,
-                'createdAt': t.createdAt.toIso8601String(),
+                'updatedAt': t.updatedAt.toIso8601String(),
               })
           .toList(),
     };

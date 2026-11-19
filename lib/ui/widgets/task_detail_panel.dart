@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../core/db/app_database.dart';
 import '../../core/services/audio_feedback_service.dart';
 import '../../core/state/providers.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 
 class TaskDetailPanel extends ConsumerStatefulWidget {
@@ -286,7 +287,7 @@ class _TaskDetailPanelState extends ConsumerState<TaskDetailPanel> {
                     Row(
                       children: [
                         Text(
-                          'Created ${DateFormat.MMMd().format(task.createdAt)}',
+                          'Updated ${DateFormat.MMMd().format(task.updatedAt)}',
                           style: TextStyle(
                             color: theme.textMutedColor,
                             fontSize: 11.5,
@@ -675,11 +676,11 @@ class _TaskDetailPanelState extends ConsumerState<TaskDetailPanel> {
       (l) => l.id == task.listId,
       orElse: () => lists.isNotEmpty
           ? lists.first
-          : const TaskList(
+          : TaskList(
               id: 'tasks',
               name: 'Tasks',
-              createdAt: null as dynamic,
-              updatedAt: null as dynamic,
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
               isDeleted: false,
               syncStatus: 'synced',
             ),

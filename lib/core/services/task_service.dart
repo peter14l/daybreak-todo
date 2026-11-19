@@ -279,7 +279,6 @@ class TaskService {
         title: Value(title.trim()),
         isCompleted: const Value(false),
         sortOrder: Value(subtasks.length),
-        createdAt: Value(now),
         updatedAt: Value(now),
         isDeleted: const Value(false),
         syncStatus: const Value('pending'),

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/services/natural_language_parser.dart';
 import '../../core/state/providers.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 
 class QuickAddBar extends ConsumerStatefulWidget {
